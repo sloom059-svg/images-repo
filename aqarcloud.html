@@ -645,7 +645,10 @@
         </div>
         <div class="flex flex-wrap gap-3">
           <button onclick="navigate('view-generator')" class="btn-primary text-sm px-6 py-3">
-            <i class="fas fa-plus ml-2"></i> إضافة عقار
+            <i class="fas fa-plus ml-2"></i> أضف عقار
+          </button>
+          <button onclick="copyMyLink()" style="background:rgba(197,168,128,0.15);color:#c5a880;border:1.5px solid rgba(197,168,128,0.35);padding:10px 20px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.3s;" onmouseover="this.style.background='rgba(197,168,128,0.25)'" onmouseout="this.style.background='rgba(197,168,128,0.15)'">
+            <i class="fas fa-share-alt"></i> شارك بروفايلك
           </button>
           <button id="admin-panel-btn" onclick="navigate('view-admin')" class="hidden px-5 py-3 rounded-xl bg-red-500/20 text-red-300 font-semibold text-sm hover:bg-red-500/30 transition-all border border-red-500/30">
             <i class="fas fa-shield-alt ml-2"></i> الإدارة
@@ -666,21 +669,41 @@
   <div class="max-w-6xl mx-auto px-4 py-8">
     <!-- Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div class="stat-box">
-        <div class="stat-box-number" id="stat-total">0</div>
-        <div class="stat-box-label">إجمالي العقارات</div>
+      <div class="stat-box" style="display:flex;align-items:center;gap:14px;padding:18px 20px;">
+        <div style="width:48px;height:48px;background:rgba(15,61,54,0.08);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-building" style="color:#0f3d36;font-size:20px;"></i>
+        </div>
+        <div>
+          <div class="stat-box-number" id="stat-total" style="font-size:28px;">0</div>
+          <div class="stat-box-label">إجمالي العقارات</div>
+        </div>
       </div>
-      <div class="stat-box">
-        <div class="stat-box-number" id="stat-land">0</div>
-        <div class="stat-box-label">أراضي</div>
+      <div class="stat-box" style="display:flex;align-items:center;gap:14px;padding:18px 20px;">
+        <div style="width:48px;height:48px;background:rgba(197,168,128,0.12);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-map" style="color:#c5a880;font-size:20px;"></i>
+        </div>
+        <div>
+          <div class="stat-box-number" id="stat-land" style="font-size:28px;">0</div>
+          <div class="stat-box-label">أراضي</div>
+        </div>
       </div>
-      <div class="stat-box">
-        <div class="stat-box-number" id="stat-villa">0</div>
-        <div class="stat-box-label">فلل وبيوت</div>
+      <div class="stat-box" style="display:flex;align-items:center;gap:14px;padding:18px 20px;">
+        <div style="width:48px;height:48px;background:rgba(15,61,54,0.08);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-home" style="color:#0f3d36;font-size:20px;"></i>
+        </div>
+        <div>
+          <div class="stat-box-number" id="stat-villa" style="font-size:28px;">0</div>
+          <div class="stat-box-label">فلل وبيوت</div>
+        </div>
       </div>
-      <div class="stat-box">
-        <div class="stat-box-number" id="stat-apt">0</div>
-        <div class="stat-box-label">شقق</div>
+      <div class="stat-box" style="display:flex;align-items:center;gap:14px;padding:18px 20px;">
+        <div style="width:48px;height:48px;background:rgba(197,168,128,0.12);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-city" style="color:#c5a880;font-size:20px;"></i>
+        </div>
+        <div>
+          <div class="stat-box-number" id="stat-apt" style="font-size:28px;">0</div>
+          <div class="stat-box-label">شقق</div>
+        </div>
       </div>
     </div>
 
@@ -1267,26 +1290,50 @@ function renderPropertiesGrid(properties, containerId, isPublic) {
     let desc = {};
     try { desc = JSON.parse(prop.description || '{}'); } catch(e) {}
     const imgUrl = prop.image_url || 'https://via.placeholder.com/400x250/0f3d36/c5a880?text=عقار';
+    const saleLabel = desc.saleType || 'للبيع';
+    const saleColor = saleLabel.includes('إيجار') ? '#e67e22' : '#0f3d36';
     return `
-      <div class="prop-card">
-        <div class="prop-img-wrapper">
-          <img src="${imgUrl}" alt="${prop.title}" onerror="this.src='https://via.placeholder.com/400x250/0f3d36/c5a880?text=عقار'">
-          <span class="type-badge">${prop.type || 'عقار'}</span>
-          ${!isPublic ? `<button class="delete-btn" onclick="deleteProperty(${prop.id})" title="حذف">
-            <i class="fas fa-times"></i>
-          </button>` : ''}
+      <div class="prop-card" style="border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.09);background:#fff;transition:transform 0.3s,box-shadow 0.3s;" onmouseover="this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(0,0,0,0.09)'">
+        <div style="position:relative;height:200px;overflow:hidden;">
+          <img src="${imgUrl}" alt="${prop.title}" style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s;" onmouseover="this.style.transform='scale(1.07)'" onmouseout="this.style.transform=''" onerror="this.src='https://via.placeholder.com/400x250/0f3d36/c5a880?text=عقار'">
+          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.4) 100%);"></div>
+          <span style="position:absolute;top:12px;right:12px;background:${saleColor};color:white;font-size:12px;font-weight:800;padding:4px 12px;border-radius:20px;">${saleLabel}</span>
+          <span style="position:absolute;top:12px;left:12px;background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);color:white;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);">${prop.type || 'عقار'}</span>
+          ${!isPublic ? `
+          <div style="position:absolute;bottom:10px;left:10px;display:flex;gap:6px;">
+            <button onclick="event.stopPropagation();generateStoryImage(${prop.id})" style="width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#c5a880;color:#0f3d36;font-size:13px;" title="سناب ستوري">
+              <i class="fas fa-camera"></i>
+            </button>
+            <button onclick="event.stopPropagation();deleteProperty(${prop.id})" style="width:36px;height:36px;border-radius:10px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:#ef4444;color:white;font-size:13px;" title="حذف">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>` : ''}
         </div>
-        <div class="p-4">
-          <h3 class="font-bold text-gray-800 text-base mb-1 truncate">${prop.title || 'بدون عنوان'}</h3>
-          ${desc.district ? `<p class="text-sm text-gray-400 mb-2"><i class="fas fa-map-marker-alt ml-1" style="color:#c5a880"></i>${desc.district}${desc.city ? ' - ' + desc.city : ''}</p>` : ''}
-          <div class="text-lg font-black mb-4 gold-text">${formatPrice(prop.price)}</div>
-          <div class="flex gap-2">
-            <button onclick="viewPropertyDetails(${prop.id}, ${isPublic})" class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all" style="background:#0f3d36">
-              <i class="fas fa-eye ml-1"></i> التفاصيل
-            </button>
-            <button onclick="generateStoryImage(${prop.id})" class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all" style="background:linear-gradient(135deg,#f7a81b,#c5a880);">
-              <i class="fas fa-camera ml-1"></i> سناب
-            </button>
+        <div style="padding:16px;" onclick="viewPropertyDetails(${prop.id}, ${isPublic})" style="cursor:pointer;">
+          <div style="font-size:22px;font-weight:900;color:#c5a880;margin-bottom:4px;">${formatPrice(prop.price)}</div>
+          <h3 style="font-weight:800;color:#1a2332;font-size:15px;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${prop.title || 'بدون عنوان'}</h3>
+          ${(desc.district || desc.city) ? `<p style="font-size:13px;color:#94a3b8;margin-bottom:10px;"><i class="fas fa-map-marker-alt" style="color:#c5a880;margin-left:4px;"></i>${desc.district || ''}${desc.district && desc.city ? '، ' : ''}${desc.city || ''}</p>` : '<div style="margin-bottom:10px;"></div>'}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            ${desc.area ? `<div style="background:#f8fafc;border-radius:12px;padding:10px;text-align:center;border:1px solid #e8edf2;">
+              <i class="fas fa-expand-arrows-alt" style="color:#0f3d36;font-size:16px;display:block;margin-bottom:4px;"></i>
+              <div style="font-size:10px;color:#94a3b8;font-weight:700;">المساحة</div>
+              <div style="font-size:13px;font-weight:800;color:#1a2332;">${desc.area} م²</div>
+            </div>` : ''}
+            ${desc.rooms ? `<div style="background:#f8fafc;border-radius:12px;padding:10px;text-align:center;border:1px solid #e8edf2;">
+              <i class="fas fa-bed" style="color:#0f3d36;font-size:16px;display:block;margin-bottom:4px;"></i>
+              <div style="font-size:10px;color:#94a3b8;font-weight:700;">غرف النوم</div>
+              <div style="font-size:13px;font-weight:800;color:#1a2332;">${desc.rooms}</div>
+            </div>` : ''}
+            ${desc.baths ? `<div style="background:#f8fafc;border-radius:12px;padding:10px;text-align:center;border:1px solid #e8edf2;">
+              <i class="fas fa-bath" style="color:#0f3d36;font-size:16px;display:block;margin-bottom:4px;"></i>
+              <div style="font-size:10px;color:#94a3b8;font-weight:700;">دورات المياه</div>
+              <div style="font-size:13px;font-weight:800;color:#1a2332;">${desc.baths}</div>
+            </div>` : ''}
+            ${desc.facade ? `<div style="background:#f8fafc;border-radius:12px;padding:10px;text-align:center;border:1px solid #e8edf2;">
+              <i class="fas fa-compass" style="color:#0f3d36;font-size:16px;display:block;margin-bottom:4px;"></i>
+              <div style="font-size:10px;color:#94a3b8;font-weight:700;">الواجهة</div>
+              <div style="font-size:13px;font-weight:800;color:#1a2332;">${desc.facade}</div>
+            </div>` : ''}
           </div>
         </div>
       </div>`;
@@ -1323,62 +1370,78 @@ function renderPropertyDetail(prop) {
   let desc = {};
   try { desc = JSON.parse(prop.description || '{}'); } catch(e) {}
   const imgUrl = prop.image_url || 'https://via.placeholder.com/800x450/0f3d36/c5a880?text=عقار';
-  const specs = [
-    { icon: 'fa-ruler-combined', label: 'المساحة', value: desc.area ? desc.area + ' م²' : null },
-    { icon: 'fa-road', label: 'عرض الشارع', value: desc.street ? desc.street + ' م' : null },
-    { icon: 'fa-map', label: 'رقم المخطط', value: desc.plot || null },
-    { icon: 'fa-compass', label: 'الواجهة', value: desc.facade || null },
-    { icon: 'fa-bed', label: 'غرف النوم', value: desc.rooms ? desc.rooms + ' غرف' : null },
-    { icon: 'fa-bath', label: 'دورات المياه', value: desc.baths ? desc.baths + ' دورة' : null },
-    { icon: 'fa-couch', label: 'الصالات', value: desc.halls ? desc.halls + ' صالة' : null },
-    { icon: 'fa-calendar', label: 'عمر العقار', value: desc.age ? desc.age + ' سنة' : null },
-    { icon: 'fa-tag', label: 'نوع البيع', value: desc.saleType || null },
+  const saleLabel = desc.saleType || 'للبيع';
+  const saleColor = saleLabel.includes('إيجار') ? '#e67e22' : '#0f3d36';
+
+  // Build spec grid like Base44 — icon + label + value, 2×2
+  const specItems = [
+    { icon: 'fa-bed',             label: 'غرف النوم',     value: desc.rooms  ? desc.rooms + ' غرف'    : null },
+    { icon: 'fa-expand-arrows-alt', label: 'المساحة',       value: desc.area   ? desc.area  + ' م²'     : null },
+    { icon: 'fa-home',            label: 'النوع',          value: prop.type   || null },
+    { icon: 'fa-bath',            label: 'دورات المياه',   value: desc.baths  ? desc.baths + ' دورة'   : null },
+    { icon: 'fa-road',            label: 'عرض الشارع',    value: desc.street ? desc.street + ' م'      : null },
+    { icon: 'fa-compass',         label: 'الواجهة',        value: desc.facade || null },
+    { icon: 'fa-couch',           label: 'الصالات',        value: desc.halls  ? desc.halls + ' صالة'   : null },
+    { icon: 'fa-calendar-alt',    label: 'عمر العقار',     value: desc.age    ? desc.age   + ' سنة'    : null },
+    { icon: 'fa-map',             label: 'رقم المخطط',    value: desc.plot   || null },
   ].filter(s => s.value);
 
-  const services = desc.services || [];
+  const services = Array.isArray(desc.services) ? desc.services : (typeof desc.services === 'string' ? JSON.parse(desc.services || '[]') : []);
   const container = document.getElementById('property-detail-content');
+
   container.innerHTML = `
-    <button onclick="history.back()" class="mb-6 flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors font-semibold">
+    <button onclick="history.back()" style="display:flex;align-items:center;gap:8px;color:#64748b;font-weight:700;margin-bottom:24px;background:none;border:none;cursor:pointer;font-size:15px;" onmouseover="this.style.color='#0f3d36'" onmouseout="this.style.color='#64748b'">
       <i class="fas fa-arrow-right"></i> رجوع
     </button>
-    <div class="bg-white rounded-3xl overflow-hidden shadow-lg">
-      <div class="relative h-72 md:h-96">
-        <img src="${imgUrl}" alt="${prop.title}" class="w-full h-full object-cover"
-          onerror="this.src='https://via.placeholder.com/800x450/0f3d36/c5a880?text=عقار'">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <div class="absolute top-4 right-4">
-          <span class="type-badge text-sm px-4 py-2">${prop.type || 'عقار'}</span>
-        </div>
-        <div class="absolute bottom-6 right-6">
-          <h1 class="text-2xl md:text-3xl font-black text-white mb-1">${prop.title || 'بدون عنوان'}</h1>
-          ${desc.district ? `<p class="text-gray-300"><i class="fas fa-map-marker-alt ml-1"></i>${desc.district}${desc.city ? ' - ' + desc.city : ''}</p>` : ''}
-        </div>
+
+    <!-- Image Header -->
+    <div style="position:relative;height:280px;border-radius:24px;overflow:hidden;margin-bottom:20px;">
+      <img src="${imgUrl}" alt="${prop.title}" style="width:100%;height:100%;object-fit:cover;" onerror="this.src='https://via.placeholder.com/800x450/0f3d36/c5a880?text=عقار'">
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.05),rgba(0,0,0,0.5));"></div>
+      <div style="position:absolute;top:14px;right:14px;display:flex;gap:8px;">
+        <span style="background:${saleColor};color:white;font-size:13px;font-weight:800;padding:5px 14px;border-radius:20px;">${saleLabel}</span>
+        <span style="background:rgba(255,255,255,0.2);backdrop-filter:blur(8px);color:white;font-size:13px;font-weight:700;padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);">${prop.type || 'عقار'}</span>
       </div>
-      <div class="p-6 md:p-8">
-        <div class="text-3xl font-black gold-text mb-6">${formatPrice(prop.price)}</div>
-        ${specs.length > 0 ? `
-          <h3 class="font-bold text-lg mb-4" style="color:#0f3d36">المواصفات</h3>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            ${specs.map(s => `
-              <div class="p-4 rounded-2xl text-center" style="background:#f8fafc;border:1.5px solid #e2e8f0">
-                <i class="fas ${s.icon} text-xl mb-2 gold-text"></i>
-                <div class="font-bold text-gray-800 text-sm">${s.value}</div>
-                <div class="text-xs text-gray-400 mt-1">${s.label}</div>
-              </div>`).join('')}
-          </div>` : ''}
-        ${services.length > 0 ? `
-          <h3 class="font-bold text-lg mb-4" style="color:#0f3d36">الخدمات القريبة</h3>
-          <div class="services-grid mb-6">
-            ${services.map(s => `<div class="service-tag">${s}</div>`).join('')}
-          </div>` : ''}
-        ${desc.location ? `
-          <a href="${desc.location}" target="_blank" class="btn-primary w-full py-3 text-sm block text-center mb-4">
-            <i class="fas fa-map-marker-alt ml-2"></i> عرض على الخريطة
-          </a>` : ''}
-        <button onclick="generateStoryImage(${prop.id})" class="w-full py-3 rounded-xl font-bold text-white text-sm transition-all" style="background:linear-gradient(135deg,#f7a81b,#c5a880)">
-          <i class="fas fa-camera ml-2"></i> إنشاء بطاقة سناب
-        </button>
+    </div>
+
+    <!-- Price + Title + Location -->
+    <div style="background:white;border-radius:20px;padding:24px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <div style="font-size:32px;font-weight:900;color:#c5a880;margin-bottom:6px;">${formatPrice(prop.price)}</div>
+      <h1 style="font-size:22px;font-weight:900;color:#1a2332;margin-bottom:8px;">${prop.title || 'بدون عنوان'}</h1>
+      ${(desc.district || desc.city) ? `<p style="color:#94a3b8;font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px;"><i class="fas fa-map-marker-alt" style="color:#c5a880;"></i>${desc.district || ''}${desc.district && desc.city ? '، ' : ''}${desc.city || ''}</p>` : ''}
+    </div>
+
+    <!-- Spec Grid — 2×2 like Base44 -->
+    ${specItems.length > 0 ? `
+    <div style="background:white;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="font-size:17px;font-weight:800;color:#0f3d36;margin-bottom:16px;">تفاصيل العقار</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        ${specItems.map(s => `
+          <div style="background:#f8fafc;border:1.5px solid #e8edf2;border-radius:16px;padding:16px;text-align:center;">
+            <i class="fas ${s.icon}" style="color:#0f3d36;font-size:22px;display:block;margin-bottom:8px;"></i>
+            <div style="font-size:11px;color:#94a3b8;font-weight:700;margin-bottom:4px;">${s.label}</div>
+            <div style="font-size:16px;font-weight:900;color:#1a2332;">${s.value}</div>
+          </div>`).join('')}
       </div>
+    </div>` : ''}
+
+    <!-- Services -->
+    ${services.length > 0 ? `
+    <div style="background:white;border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="font-size:17px;font-weight:800;color:#0f3d36;margin-bottom:14px;">الخدمات القريبة</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        ${services.map(s => `<span style="background:#f0f7f5;color:#0f3d36;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;border:1px solid #d1e8e4;">${typeof s === 'string' ? s : (s.type || s.title || '')}</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- Actions -->
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      ${desc.location ? `<a href="${desc.location}" target="_blank" style="flex:1;background:#0f3d36;color:white;padding:14px;border-radius:14px;font-weight:800;text-align:center;text-decoration:none;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <i class="fas fa-map-marker-alt"></i> عرض على الخريطة
+      </a>` : ''}
+      <button onclick="generateStoryImage(${prop.id})" style="flex:1;background:linear-gradient(135deg,#c5a880,#a8855a);color:white;padding:14px;border-radius:14px;font-weight:800;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <i class="fas fa-camera"></i> إنشاء بطاقة سناب
+      </button>
     </div>`;
 }
 
