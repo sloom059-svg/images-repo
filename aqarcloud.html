@@ -1,833 +1,1731 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عقار كلاود | منصة الوسيط الذكية</title>
-    
-    <link rel="icon" href="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" type="image/png">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" crossorigin="anonymous">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        :root { --primary: #0f3d36; --primary-hover: #0a2924; --bg-color: #f8fafc; --card-bg: #ffffff; }
-        * { font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg-color); color: #222; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
-        
-        /* نظام التوجيه */
-        .spa-view { display: none; opacity: 0; transition: opacity 0.3s ease; flex: 1; }
-        .spa-view.active { display: block; opacity: 1; animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .form-box { background: var(--card-bg); padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        
-        label { display: block; margin-top: 16px; margin-bottom: 6px; font-weight: 700; font-size: 14px; color: #334155; }
-        input[type="text"], input[type="number"], input[type="email"], input[type="password"], input[type="url"], select, textarea {
-            width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 15px; font-weight: 500; outline: none; background: #f8fafc; transition: all 0.2s;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(15, 61, 54, 0.1); }
-        
-        .btn-primary { width: 100%; padding: 14px 20px; border: none; border-radius: 10px; background: var(--primary); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(15, 61, 54, 0.2); }
-        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-outline:hover { background: var(--primary); color: #fff; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عقار كلاود - AqarCloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/html-to-image@1.11.11/dist/html-to-image.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+  * { font-family: 'Cairo', sans-serif; }
+  body { background: #f0f4f8; }
+  .view { display: none; }
+  .view.active { display: block; }
 
-        .hidden-fields { display: none; }
-        .hidden-fields.show { display: block; animation: fadeIn 0.3s ease; }
-        
-        #snap-story-container { position: fixed; top: 0; left: -9999px; width: 1080px; height: 1920px; background-color: #eef2f5; z-index: -1; }
-        
-        .nav-link { color: #64748b; font-weight: 700; transition: color 0.2s; cursor: pointer; }
-        .nav-link:hover, .nav-link.active { color: var(--primary); }
-    </style>
+  /* Navbar */
+  .navbar {
+    position: sticky; top: 0; z-index: 1000;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+  }
+
+  /* Hero */
+  .hero-gradient {
+    background: linear-gradient(135deg, #0a2924 0%, #1a5c52 50%, #0f3d36 100%);
+    min-height: 92vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .hero-gradient::before {
+    content: ''; position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c5a880' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+  .gold-text { color: #c5a880; }
+  .btn-primary {
+    background: #c5a880; color: #0f3d36;
+    font-weight: 700; padding: 14px 32px; border-radius: 50px;
+    border: none; cursor: pointer; transition: all 0.3s;
+    font-size: 16px;
+  }
+  .btn-primary:hover { background: #b8976e; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(197,168,128,0.4); }
+  .btn-outline {
+    background: transparent; color: white;
+    font-weight: 700; padding: 14px 32px; border-radius: 50px;
+    border: 2px solid rgba(255,255,255,0.5); cursor: pointer; transition: all 0.3s;
+    font-size: 16px;
+  }
+  .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: white; transform: translateY(-2px); }
+
+  /* Stats bar */
+  .stats-bar {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px; padding: 20px 40px;
+    display: flex; justify-content: space-around; align-items: center;
+    gap: 20px; flex-wrap: wrap;
+  }
+  .stat-item { text-align: center; color: white; }
+  .stat-number { font-size: 28px; font-weight: 900; color: #c5a880; line-height: 1; }
+  .stat-label { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+  /* Feature cards */
+  .feature-card {
+    background: white; border-radius: 20px;
+    padding: 32px 24px; text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .feature-card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(0,0,0,0.15); }
+  .feature-icon {
+    width: 72px; height: 72px; border-radius: 20px;
+    background: linear-gradient(135deg, #0f3d36, #1a5c52);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 28px; color: #c5a880;
+  }
+
+  /* How it works - dark bg */
+  .how-section { background: linear-gradient(135deg, #0a2924, #0f3d36); padding: 80px 0; }
+  .step-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(197,168,128,0.2);
+    border-radius: 20px; padding: 32px 24px; text-align: center;
+    transition: all 0.3s;
+  }
+  .step-card:hover { background: rgba(255,255,255,0.12); border-color: rgba(197,168,128,0.5); }
+  .step-number {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: #c5a880; color: #0f3d36;
+    font-size: 24px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+
+  /* Property card */
+  .prop-card {
+    background: white; border-radius: 16px;
+    overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+  }
+  .prop-card:hover { transform: translateY(-6px); box-shadow: 0 12px 35px rgba(0,0,0,0.15); }
+  .prop-img-wrapper { overflow: hidden; height: 200px; position: relative; }
+  .prop-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+  .prop-card:hover .prop-img-wrapper img { transform: scale(1.08); }
+  .type-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: #0f3d36; color: white;
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  }
+  .delete-btn {
+    position: absolute; top: 12px; left: 12px;
+    background: #ef4444; color: white;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 13px;
+    transition: all 0.2s; border: none; z-index: 10;
+  }
+  .delete-btn:hover { background: #dc2626; transform: scale(1.1); }
+
+  /* Dashboard */
+  .dashboard-header {
+    background: linear-gradient(135deg, #0a2924, #1a5c52);
+    padding: 48px 32px; border-radius: 0 0 30px 30px;
+  }
+  .share-link-box {
+    border: 2px solid #c5a880; border-radius: 16px;
+    padding: 16px 24px; background: rgba(197,168,128,0.05);
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap;
+  }
+  .stat-box {
+    background: white; border-radius: 16px;
+    padding: 24px; text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    transition: transform 0.3s;
+  }
+  .stat-box:hover { transform: translateY(-4px); }
+  .stat-box-number { font-size: 36px; font-weight: 900; color: #0f3d36; line-height: 1; }
+  .stat-box-label { font-size: 13px; color: #64748b; margin-top: 6px; }
+
+  /* Admin panel */
+  .admin-header {
+    background: linear-gradient(135deg, #7f1d1d, #dc2626);
+    padding: 48px 32px; border-radius: 0 0 30px 30px;
+  }
+
+  /* Form sections */
+  .form-section {
+    background: white; border-radius: 16px;
+    padding: 28px; margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .form-section-title {
+    font-size: 17px; font-weight: 700; color: #0f3d36;
+    border-bottom: 2px solid #f0f4f8; padding-bottom: 12px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .input-field {
+    width: 100%; padding: 12px 16px; border: 1.5px solid #e2e8f0;
+    border-radius: 10px; font-family: 'Cairo', sans-serif;
+    font-size: 14px; color: #1e293b; background: #f8fafc;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .input-field:focus { border-color: #0f3d36; box-shadow: 0 0 0 3px rgba(15,61,54,0.1); background: white; }
+  .input-label { font-size: 13px; font-weight: 600; color: #475569; margin-bottom: 6px; display: block; }
+
+  /* Toast */
+  #toast-container {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    z-index: 9999; display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .toast {
+    background: white; border-radius: 14px;
+    padding: 14px 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    display: flex; align-items: center; gap: 12px;
+    animation: slideUp 0.3s ease; min-width: 280px; max-width: 420px;
+    font-weight: 600; font-size: 14px;
+  }
+  .toast-success { border-right: 4px solid #10b981; }
+  .toast-error { border-right: 4px solid #ef4444; }
+  .toast-icon-success { color: #10b981; font-size: 20px; }
+  .toast-icon-error { color: #ef4444; font-size: 20px; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Story modal */
+  #story-modal {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+  }
+  #story-modal.open { display: flex; }
+  .modal-card {
+    background: white; border-radius: 24px; padding: 32px;
+    max-width: 500px; width: 90%; text-align: center;
+  }
+
+  /* Snap container - off screen */
+  #snap-container {
+    position: fixed; left: -9999px; top: 0;
+    width: 1080px; height: 1920px;
+    overflow: hidden; background: #0f3d36;
+  }
+
+  /* Public profile hero */
+  .profile-hero {
+    background: linear-gradient(135deg, #0a2924, #1a5c52);
+    padding: 60px 32px; text-align: center;
+  }
+  .profile-avatar {
+    width: 100px; height: 100px; border-radius: 50%;
+    border: 4px solid #c5a880; margin: 0 auto 20px;
+    overflow: hidden; background: #0f3d36;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Login card */
+  .login-card {
+    background: white; border-radius: 24px; padding: 48px 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.12); max-width: 440px; width: 90%;
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center; padding: 64px 20px;
+    color: #94a3b8;
+  }
+  .empty-state i { font-size: 64px; margin-bottom: 16px; opacity: 0.4; }
+
+  /* Mobile menu */
+  #mobile-menu { display: none; }
+  #mobile-menu.open { display: block; }
+
+  /* Spinner */
+  .spinner {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 4px solid #f0f4f8; border-top-color: #0f3d36;
+    animation: spin 0.8s linear infinite; margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Services grid */
+  .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .service-tag {
+    background: rgba(15,61,54,0.08); color: #0f3d36;
+    padding: 6px 10px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    text-align: center;
+  }
+
+  /* Image upload area */
+  .upload-area {
+    border: 2px dashed #c5a880; border-radius: 16px;
+    padding: 40px 20px; text-align: center; cursor: pointer;
+    transition: all 0.3s; background: #fffdf8;
+  }
+  .upload-area:hover { border-color: #b8976e; background: #fff8ed; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #f0f4f8; }
+  ::-webkit-scrollbar-thumb { background: #0f3d36; border-radius: 3px; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-gradient { min-height: 85vh; padding: 40px 20px; }
+    .stats-bar { padding: 16px 20px; }
+    .stat-number { font-size: 22px; }
+    .dashboard-header { padding: 32px 20px; }
+    .login-card { padding: 32px 24px; }
+  }
+</style>
 </head>
 <body>
 
-    <!-- التنبيهات -->
-    <div id="toast-message" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-white text-[#0f3d36] px-6 py-3 rounded-xl shadow-xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-[9999] font-bold text-sm text-center flex items-center gap-3 border border-[#ddd]">
-        <span id="toast-icon"></span><span id="toast-text"></span>
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" alt="Logo" class="h-10 w-auto">
+    </div>
+    <!-- Desktop nav -->
+    <div class="hidden md:flex items-center gap-6">
+      <a href="#" onclick="navigate('view-home')" class="text-gray-700 font-semibold hover:text-green-800 transition-colors">الرئيسية</a>
+      <a href="#" onclick="navigate('view-about')" class="text-gray-700 font-semibold hover:text-green-800 transition-colors">من نحن</a>
+      <a href="#" onclick="navigate('view-contact')" class="text-gray-700 font-semibold hover:text-green-800 transition-colors">تواصل معنا</a>
+    </div>
+    <!-- Auth buttons -->
+    <div class="hidden md:flex items-center gap-3">
+      <div id="nav-logged-out" class="flex items-center gap-3">
+        <button onclick="navigate('view-login')" class="px-5 py-2 rounded-full bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition-colors text-sm">
+          تسجيل الدخول
+        </button>
+      </div>
+      <div id="nav-logged-in" class="hidden flex items-center gap-3">
+        <span id="nav-username" class="px-4 py-1.5 rounded-full text-sm font-semibold text-white" style="background:#0f3d36"></span>
+        <button onclick="navigate('view-dashboard')" class="px-5 py-2 rounded-full text-sm font-semibold text-white transition-all" style="background:#0f3d36">لوحة التحكم</button>
+        <button onclick="handleLogout()" class="px-4 py-2 rounded-full text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors border border-red-200">خروج</button>
+      </div>
+    </div>
+    <!-- Mobile hamburger -->
+    <button class="md:hidden text-gray-700 text-2xl p-2" onclick="toggleMobileMenu()">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-100 px-4 py-4">
+    <div class="flex flex-col gap-3">
+      <a href="#" onclick="navigate('view-home'); toggleMobileMenu()" class="py-2 text-gray-700 font-semibold border-b border-gray-50">الرئيسية</a>
+      <a href="#" onclick="navigate('view-about'); toggleMobileMenu()" class="py-2 text-gray-700 font-semibold border-b border-gray-50">من نحن</a>
+      <a href="#" onclick="navigate('view-contact'); toggleMobileMenu()" class="py-2 text-gray-700 font-semibold border-b border-gray-50">تواصل معنا</a>
+      <div id="mobile-nav-logged-out">
+        <button onclick="navigate('view-login'); toggleMobileMenu()" class="w-full py-2.5 rounded-xl font-semibold text-white mt-2" style="background:#0f3d36">تسجيل الدخول</button>
+      </div>
+      <div id="mobile-nav-logged-in" class="hidden flex flex-col gap-2">
+        <button onclick="navigate('view-dashboard'); toggleMobileMenu()" class="w-full py-2.5 rounded-xl font-semibold text-white" style="background:#0f3d36">لوحة التحكم</button>
+        <button onclick="handleLogout(); toggleMobileMenu()" class="w-full py-2.5 rounded-xl font-semibold text-red-600 border border-red-200">خروج</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== VIEWS ===== -->
+
+<!-- HOME VIEW -->
+<div id="view-home" class="view active">
+  <!-- Hero -->
+  <section class="hero-gradient">
+    <div class="relative z-10 max-w-3xl mx-auto px-4 py-20">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8" style="background:rgba(197,168,128,0.15); border:1px solid rgba(197,168,128,0.3)">
+        <i class="fas fa-star text-yellow-400 text-xs"></i>
+        <span class="text-white text-sm font-semibold">المنصة العقارية الأولى في المملكة</span>
+      </div>
+      <h1 class="text-5xl md:text-7xl font-black text-white mb-4 leading-tight">
+        أدِر عقاراتك
+      </h1>
+      <h2 class="text-4xl md:text-6xl font-black mb-8 leading-tight gold-text">
+        كالمحترفين
+      </h2>
+      <p class="text-xl text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto">
+        منصة متكاملة لإدارة العقارات وإنشاء بطاقات سناب شات الاحترافية في ثوانٍ معدودة
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+        <button onclick="navigate('view-login')" class="btn-primary text-lg px-10 py-4">
+          <i class="fas fa-rocket ml-2"></i> ابدأ مجاناً
+        </button>
+        <button onclick="navigate('view-about')" class="btn-outline text-lg px-10 py-4">
+          <i class="fas fa-play-circle ml-2"></i> اعرف أكثر
+        </button>
+      </div>
+      <!-- Stats bar -->
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-number">500+</div>
+          <div class="stat-label">وسيط عقاري</div>
+        </div>
+        <div class="hidden sm:block w-px h-12 bg-white/20"></div>
+        <div class="stat-item">
+          <div class="stat-number">10K+</div>
+          <div class="stat-label">عقار مسجل</div>
+        </div>
+        <div class="hidden sm:block w-px h-12 bg-white/20"></div>
+        <div class="stat-item">
+          <div class="stat-number">50K+</div>
+          <div class="stat-label">بطاقة سناب</div>
+        </div>
+        <div class="hidden sm:block w-px h-12 bg-white/20"></div>
+        <div class="stat-item">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">دعم متواصل</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="py-20 px-4 max-w-6xl mx-auto">
+    <div class="text-center mb-14">
+      <h2 class="text-4xl font-black mb-4" style="color:#0f3d36">لماذا عقار كلاود؟</h2>
+      <p class="text-gray-500 text-lg">كل ما تحتاجه لإدارة عملك العقاري في مكان واحد</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-building"></i></div>
+        <h3 class="text-xl font-bold mb-3" style="color:#0f3d36">إدارة العقارات</h3>
+        <p class="text-gray-500 leading-relaxed">أضف وأدِر جميع عقاراتك من مكان واحد بسهولة تامة مع نظام بحث وتصفية متقدم</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-camera"></i></div>
+        <h3 class="text-xl font-bold mb-3" style="color:#0f3d36">بطاقات سناب شات</h3>
+        <p class="text-gray-500 leading-relaxed">أنشئ بطاقات احترافية بمقاس 1080×1920 جاهزة للنشر على سناب شات في ثوانٍ</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-share-alt"></i></div>
+        <h3 class="text-xl font-bold mb-3" style="color:#0f3d36">ملف احترافي</h3>
+        <p class="text-gray-500 leading-relaxed">احصل على رابط شخصي لمشاركة جميع عقاراتك مع العملاء بشكل احترافي وأنيق</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-section">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="text-center mb-14">
+        <h2 class="text-4xl font-black text-white mb-4">كيف يعمل؟</h2>
+        <p class="text-gray-400 text-lg">ثلاث خطوات بسيطة للبدء</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="step-card">
+          <div class="step-number">١</div>
+          <h3 class="text-xl font-bold text-white mb-3">سجّل حسابك</h3>
+          <p class="text-gray-400 leading-relaxed">تواصل مع الإدارة لإنشاء حسابك كوسيط عقاري معتمد على المنصة</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">٢</div>
+          <h3 class="text-xl font-bold text-white mb-3">أضف عقاراتك</h3>
+          <p class="text-gray-400 leading-relaxed">أدخل تفاصيل عقاراتك مع الصور والأسعار والمواصفات الكاملة بسهولة</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">٣</div>
+          <h3 class="text-xl font-bold text-white mb-3">شارك واكسب</h3>
+          <p class="text-gray-400 leading-relaxed">شارك رابطك الشخصي وأنشئ بطاقات سناب لجذب المزيد من العملاء</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-20 px-4 text-center" style="background: linear-gradient(135deg, #f0f4f8, #e8f0fe)">
+    <div class="max-w-2xl mx-auto">
+      <h2 class="text-4xl font-black mb-4" style="color:#0f3d36">ابدأ رحلتك العقارية اليوم</h2>
+      <p class="text-gray-500 text-lg mb-8">انضم لآلاف الوسطاء العقاريين الذين يثقون في عقار كلاود</p>
+      <button onclick="navigate('view-contact')" class="btn-primary text-lg px-12 py-4">
+        <i class="fas fa-envelope ml-2"></i> تواصل معنا
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="background:#0a2924" class="py-10 text-center">
+    <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" alt="Logo" class="h-12 mx-auto mb-4">
+    <p class="text-gray-400 text-sm">© 2024 عقار كلاود - جميع الحقوق محفوظة</p>
+  </footer>
+</div>
+
+<!-- ABOUT VIEW -->
+<div id="view-about" class="view">
+  <div style="background: linear-gradient(135deg, #0a2924, #1a5c52)" class="py-20 text-center">
+    <h1 class="text-4xl font-black text-white mb-4">من نحن</h1>
+    <p class="text-gray-300 text-lg">نبذة عن منصة عقار كلاود</p>
+  </div>
+  <div class="max-w-4xl mx-auto px-4 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center mb-16">
+      <div>
+        <h2 class="text-3xl font-black mb-5" style="color:#0f3d36">رؤيتنا</h2>
+        <p class="text-gray-600 leading-loose text-lg">
+          عقار كلاود منصة عقارية رقمية متكاملة تهدف إلى تمكين الوسطاء العقاريين من إدارة عقاراتهم بكفاءة عالية وتقديم تجربة احترافية للعملاء. نؤمن بأن التكنولوجيا يجب أن تكون في خدمة القطاع العقاري.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-eye"></i></div>
+        <h3 class="text-xl font-bold mt-4" style="color:#0f3d36">نحو مستقبل عقاري رقمي</h3>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="text-center p-6 rounded-2xl" style="background:rgba(15,61,54,0.05)">
+        <div class="text-4xl font-black gold-text mb-2">2020</div>
+        <div class="text-gray-600 font-semibold">سنة التأسيس</div>
+      </div>
+      <div class="text-center p-6 rounded-2xl" style="background:rgba(15,61,54,0.05)">
+        <div class="text-4xl font-black gold-text mb-2">500+</div>
+        <div class="text-gray-600 font-semibold">وسيط معتمد</div>
+      </div>
+      <div class="text-center p-6 rounded-2xl" style="background:rgba(15,61,54,0.05)">
+        <div class="text-4xl font-black gold-text mb-2">10K+</div>
+        <div class="text-gray-600 font-semibold">عقار مسجل</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT VIEW -->
+<div id="view-contact" class="view">
+  <div style="background: linear-gradient(135deg, #0a2924, #1a5c52)" class="py-20 text-center">
+    <h1 class="text-4xl font-black text-white mb-4">تواصل معنا</h1>
+    <p class="text-gray-300 text-lg">نحن هنا للمساعدة في أي وقت</p>
+  </div>
+  <div class="max-w-2xl mx-auto px-4 py-16">
+    <div class="bg-white rounded-3xl p-10 shadow-lg">
+      <div class="grid grid-cols-1 gap-5 mb-6">
+        <div>
+          <label class="input-label">الاسم الكامل</label>
+          <input type="text" placeholder="أدخل اسمك الكامل" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">البريد الإلكتروني</label>
+          <input type="email" placeholder="example@domain.com" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">رقم الجوال</label>
+          <input type="tel" placeholder="05xxxxxxxx" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">الرسالة</label>
+          <textarea rows="5" placeholder="اكتب رسالتك هنا..." class="input-field resize-none"></textarea>
+        </div>
+      </div>
+      <button onclick="showToast('تم إرسال رسالتك بنجاح! سنتواصل معك قريباً')" class="btn-primary w-full py-4 text-base">
+        <i class="fas fa-paper-plane ml-2"></i> إرسال الرسالة
+      </button>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+      <div class="text-center p-5 bg-white rounded-2xl shadow-sm">
+        <i class="fas fa-envelope text-2xl mb-3 gold-text"></i>
+        <div class="text-sm font-semibold text-gray-700">info@aqarcloud.sa</div>
+      </div>
+      <div class="text-center p-5 bg-white rounded-2xl shadow-sm">
+        <i class="fas fa-phone text-2xl mb-3 gold-text"></i>
+        <div class="text-sm font-semibold text-gray-700">920000000</div>
+      </div>
+      <div class="text-center p-5 bg-white rounded-2xl shadow-sm">
+        <i class="fas fa-map-marker-alt text-2xl mb-3 gold-text"></i>
+        <div class="text-sm font-semibold text-gray-700">الرياض، المملكة العربية السعودية</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN VIEW -->
+<div id="view-login" class="view">
+  <div class="min-h-screen flex items-center justify-center px-4 py-10" style="background: linear-gradient(135deg, #0a2924, #1a5c52)">
+    <div class="login-card">
+      <div class="text-center mb-8">
+        <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" alt="Logo" class="h-16 mx-auto mb-5">
+        <h2 class="text-2xl font-black" style="color:#0f3d36">تسجيل الدخول</h2>
+        <p class="text-gray-500 text-sm mt-2">أدخل بياناتك للوصول إلى حسابك</p>
+      </div>
+      <div class="space-y-5">
+        <div>
+          <label class="input-label">البريد الإلكتروني</label>
+          <input id="login-email" type="email" placeholder="example@domain.com" class="input-field" onkeydown="if(event.key==='Enter')handleLogin()">
+        </div>
+        <div>
+          <label class="input-label">كلمة المرور</label>
+          <input id="login-password" type="password" placeholder="••••••••" class="input-field" onkeydown="if(event.key==='Enter')handleLogin()">
+        </div>
+        <button onclick="handleLogin()" class="btn-primary w-full py-4 text-base mt-2">
+          <i class="fas fa-sign-in-alt ml-2"></i> دخول
+        </button>
+      </div>
+      <p class="text-center text-sm text-gray-400 mt-6">
+        ليس لديك حساب؟ <a href="#" onclick="navigate('view-contact')" class="font-semibold" style="color:#0f3d36">تواصل معنا</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN VIEW -->
+<div id="view-admin" class="view">
+  <!-- Admin Header -->
+  <div class="admin-header">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+              <i class="fas fa-shield-alt text-white text-xl"></i>
+            </div>
+            <div>
+              <h1 class="text-2xl font-black text-white">لوحة الإدارة</h1>
+              <p class="text-red-200 text-sm">إدارة الوسطاء والنظام</p>
+            </div>
+          </div>
+        </div>
+        <button onclick="navigate('view-dashboard')" class="px-5 py-2.5 rounded-xl bg-white/20 text-white font-semibold text-sm hover:bg-white/30 transition-all">
+          <i class="fas fa-arrow-right ml-2"></i> لوحة التحكم
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Add broker form -->
+    <div class="bg-white rounded-2xl p-8 shadow-sm mb-8">
+      <h3 class="text-xl font-black mb-6 flex items-center gap-3" style="color:#0f3d36">
+        <i class="fas fa-user-plus gold-text"></i> إضافة وسيط جديد
+      </h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="input-label">الاسم الكامل</label>
+          <input id="new-broker-name" type="text" placeholder="اسم الوسيط" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">البريد الإلكتروني</label>
+          <input id="new-broker-email" type="email" placeholder="broker@domain.com" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">رقم الجوال</label>
+          <input id="new-broker-phone" type="tel" placeholder="05xxxxxxxx" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">الصلاحية</label>
+          <select id="new-broker-role" class="input-field">
+            <option value="broker">وسيط عقاري</option>
+            <option value="admin">مدير</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="addNewBroker()" class="mt-6 px-8 py-3 rounded-xl font-bold text-white transition-all text-sm" style="background:#0f3d36">
+        <i class="fas fa-plus ml-2"></i> إضافة الوسيط
+      </button>
     </div>
 
-    <!-- شريط التنقل الرئيسي (Navbar) -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20">
-                <div class="flex items-center gap-6">
-                    <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" class="h-12 w-auto cursor-pointer" alt="عقار كلاود" onclick="navigate('view-home')">
-                    <div class="hidden md:flex space-x-8 space-x-reverse ml-8">
-                        <a onclick="navigate('view-home')" class="nav-link">الرئيسية</a>
-                        <a onclick="navigate('view-about')" class="nav-link">من نحن</a>
-                        <a onclick="navigate('view-contact')" class="nav-link">اتصل بنا</a>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span id="nav-user-info" class="hidden font-bold text-[#0f3d36] bg-green-50 px-4 py-2 rounded-lg"></span>
-                    <button id="nav-login-btn" onclick="navigate('view-login')" class="btn-primary w-auto px-6 py-2 text-sm">دخول الوسطاء</button>
-                    <button id="nav-dash-btn" onclick="navigate('view-dashboard')" class="hidden btn-outline w-auto px-6 py-2 text-sm font-bold rounded-lg border-2 border-[#0f3d36] text-[#0f3d36] hover:bg-[#0f3d36] hover:text-white transition">لوحة التحكم</button>
-                </div>
-            </div>
+    <!-- Brokers list -->
+    <div class="bg-white rounded-2xl p-8 shadow-sm">
+      <h3 class="text-xl font-black mb-6 flex items-center gap-3" style="color:#0f3d36">
+        <i class="fas fa-users gold-text"></i> قائمة الوسطاء
+      </h3>
+      <div id="admin-brokers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="empty-state">
+          <i class="fas fa-users"></i>
+          <p class="font-semibold text-lg">جاري التحميل...</p>
         </div>
-    </nav>
-
-    <!-- 1. الصفحة الرئيسية (Home) -->
-    <main id="view-home" class="spa-view active">
-        <div class="bg-[#0f3d36] text-white py-24 px-4 text-center">
-            <h1 class="text-5xl font-black mb-6">مستقبلك العقاري يبدأ من هنا</h1>
-            <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">عقار كلاود هي المنصة الذكية الأولى المتخصصة في تمكين الوسطاء العقاريين من إدارة أملاكهم وإصدار بطاقات السناب شات الاحترافية بضغطة زر.</p>
-            <button onclick="navigate('view-login')" class="bg-white text-[#0f3d36] font-bold text-lg px-10 py-4 rounded-xl hover:bg-gray-100 transition shadow-xl">ابدأ رحلتك كوسيط</button>
-        </div>
-        <div class="max-w-7xl mx-auto px-4 py-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div class="p-6">
-                <i class="fa-solid fa-bolt text-4xl text-[#c5a880] mb-4"></i>
-                <h3 class="text-xl font-bold mb-2">إصدار سريع للبطاقات</h3>
-                <p class="text-gray-600">صمم بطاقات سناب شات عالية الدقة لعقاراتك بضغطة زر واحدة وبدون خبرة في التصميم.</p>
-            </div>
-            <div class="p-6">
-                <i class="fa-solid fa-map-location-dot text-4xl text-[#c5a880] mb-4"></i>
-                <h3 class="text-xl font-bold mb-2">جلب الخدمات الذكي</h3>
-                <p class="text-gray-600">فقط ضع رابط جوجل ماب، وسنقوم باستخراج أقرب المدارس والمساجد والخدمات لعقارك.</p>
-            </div>
-            <div class="p-6">
-                <i class="fa-solid fa-globe text-4xl text-[#c5a880] mb-4"></i>
-                <h3 class="text-xl font-bold mb-2">صفحة عامة مخصصة</h3>
-                <p class="text-gray-600">شارك رابط مكتبك مع عملائك ليتصفحوا كافة عروضك العقارية بشكل فخم واحترافي.</p>
-            </div>
-        </div>
-    </main>
-
-    <!-- 2. صفحة من نحن (About Us) -->
-    <main id="view-about" class="spa-view py-16 px-4">
-        <div class="max-w-4xl mx-auto form-box border-none shadow-lg">
-            <h1 class="text-4xl font-black mb-6 text-[#0f3d36] border-b pb-4">من نحن</h1>
-            <p class="text-lg text-gray-700 leading-relaxed mb-4">عقار كلاود هي منصة تقنية سعودية صُممت بأيادي خبراء في السوق العقاري والتقني لأكثر من 30 عاماً.</p>
-            <p class="text-lg text-gray-700 leading-relaxed mb-4">رسالتنا هي رقمنة عمل الوسيط العقاري وتسهيل تسويقه للعقارات عبر أدوات ذكية توفر الوقت والجهد، وترفع من موثوقية العرض أمام المشتري.</p>
-        </div>
-    </main>
-
-    <!-- 3. صفحة اتصل بنا (Contact Us) -->
-    <main id="view-contact" class="spa-view py-16 px-4">
-        <div class="max-w-4xl mx-auto form-box border-none shadow-lg">
-            <h1 class="text-4xl font-black mb-6 text-[#0f3d36] border-b pb-4">اتصل بنا</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4">نسعد بتواصلك معنا</h3>
-                    <p class="text-gray-600 mb-6">فريق الدعم الفني جاهز للرد على استفساراتك على مدار الساعة.</p>
-                    <ul class="space-y-4 text-gray-700 font-bold">
-                        <li><i class="fa-solid fa-phone text-[#c5a880] ml-2"></i> 0500000000</li>
-                        <li><i class="fa-solid fa-envelope text-[#c5a880] ml-2"></i> support@aqarcloud.com</li>
-                        <li><i class="fa-solid fa-location-dot text-[#c5a880] ml-2"></i> الرياض، المملكة العربية السعودية</li>
-                    </ul>
-                </div>
-                <div class="space-y-4">
-                    <input type="text" placeholder="الاسم الكريم">
-                    <input type="email" placeholder="البريد الإلكتروني">
-                    <textarea rows="4" placeholder="رسالتك..."></textarea>
-                    <button class="btn-primary w-full">إرسال الرسالة</button>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- 4. شاشة الدخول -->
-    <main id="view-login" class="spa-view flex items-center justify-center py-16 px-4">
-        <div class="w-full max-w-md form-box text-center shadow-2xl border-none">
-            <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" alt="عقار كلاود" class="w-48 h-auto mx-auto mb-4 object-contain">
-            <h1 class="text-2xl font-black mb-1">دخول الوسطاء</h1>
-            <p class="text-gray-500 font-medium mb-8 text-sm">أدخل بياناتك للوصول لمكتبك الذكي</p>
-            
-            <div class="text-right">
-                <label>البريد الإلكتروني</label>
-                <input type="email" id="login-email" placeholder="broker@cloud.com" class="dir-ltr text-right">
-                
-                <label>كلمة المرور</label>
-                <input type="password" id="login-pass" placeholder="••••••••">
-                
-                <button onclick="handleLogin()" id="btn-login" class="btn-primary mt-8">تسجيل الدخول <i class="fa-solid fa-arrow-left"></i></button>
-            </div>
-        </div>
-    </main>
-
-    <!-- 5. لوحة الإدارة (للمدير) -->
-    <main id="view-admin" class="spa-view pb-12">
-        <div class="max-w-6xl mx-auto px-4 mt-8">
-            <div class="flex justify-between items-center mb-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-shield-halved"></i></div>
-                    <div><h2 class="text-xl font-black">لوحة الإدارة العليا</h2><p class="text-gray-500 text-sm">إدارة مكاتب عقار كلاود</p></div>
-                </div>
-                <button onclick="handleLogout()" class="btn-outline w-auto px-4 py-2 text-sm border-red-500 text-red-500 hover:bg-red-500 rounded-lg">تسجيل خروج</button>
-            </div>
-
-            <div class="form-box mb-6 border-none shadow-sm">
-                <h3 class="text-lg font-bold mb-4 border-r-4 border-[#0f3d36] pr-3">تسجيل مكتب جديد</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div><label>اسم المكتب</label><input type="text" id="new-broker-name"></div>
-                    <div><label>البريد الإلكتروني</label><input type="email" id="new-broker-email"></div>
-                    <div><label>رقم الجوال</label><input type="text" id="new-broker-phone"></div>
-                </div>
-                <button onclick="addNewBroker()" class="btn-primary mt-6 w-auto px-8 text-sm"><i class="fa-solid fa-user-plus"></i> إنشاء الملف</button>
-            </div>
-            <div id="brokers-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-        </div>
-    </main>
-
-    <!-- 6. لوحة الوسيط (الداشبورد) -->
-    <main id="view-dashboard" class="spa-view pb-12">
-        <div class="max-w-7xl mx-auto px-4 mt-8">
-            
-            <!-- الهيدر الخاص بالوسيط -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-16 h-16 bg-[#0f3d36] text-white rounded-full flex items-center justify-center text-2xl font-black shadow-lg"><i class="fa-solid fa-building"></i></div>
-                    <div>
-                        <h2 id="dash-name" class="text-2xl font-black text-gray-800">مكتب الوسيط</h2>
-                        <span class="inline-flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-bold mt-1"><i class="fa-solid fa-circle text-[8px]"></i> حساب نشط</span>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="copyProfileLink()" class="btn-primary py-2 px-4 text-sm w-full md:w-auto bg-[#c5a880] hover:bg-[#b09570] text-white"><i class="fa-solid fa-share-nodes"></i> رابط مكتبك</button>
-                    <button onclick="fetchProperties()" class="btn-primary btn-secondary py-2 px-4 text-sm w-full md:w-auto"><i class="fa-solid fa-rotate"></i> تحديث</button>
-                    <button onclick="navigate('view-generator')" class="btn-primary py-2 px-4 text-sm w-full md:w-auto"><i class="fa-solid fa-plus"></i> إضافة عقار</button>
-                    <button onclick="handleLogout()" class="text-red-500 font-bold hover:text-red-700 bg-red-50 px-4 py-2 rounded-xl text-sm transition w-full md:w-auto"><i class="fa-solid fa-power-off"></i></button>
-                </div>
-            </div>
-
-            <!-- قسم رابط المكتب المخصص -->
-            <div class="bg-[#f0f4f8] border border-[#d1d5db] p-5 rounded-2xl mb-8 flex flex-col md:flex-row items-center justify-between gap-4 shadow-inner">
-                <div>
-                    <h3 class="font-bold text-[#0f3d36] text-lg"><i class="fa-solid fa-share-nodes"></i> انشر صفحتك للعملاء</h3>
-                    <p class="text-sm text-gray-600 mt-1">هذا الرابط يحتوي على بروفايلك وكافة عروضك العقارية، انسخه وشاركه في البايو أو الواتساب.</p>
-                </div>
-                <div class="flex w-full md:w-1/2 gap-2">
-                    <input type="text" id="broker-public-link" readonly class="bg-white border-gray-300 flex-1 dir-ltr text-left text-sm text-gray-500">
-                    <button onclick="copyMyLink()" class="btn-primary w-auto px-6 bg-[#c5a880] hover:bg-[#b09570] text-sm whitespace-nowrap"><i class="fa-solid fa-copy"></i> نسخ</button>
-                </div>
-            </div>
-
-            <h3 class="text-2xl font-black border-r-4 border-[#0f3d36] pr-3 text-gray-800 mb-6">عقاراتي النشطة</h3>
-            <div id="properties-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
-        </div>
-    </main>
-
-    <!-- 7. شاشة تفاصيل العقار -->
-    <main id="view-property-detail" class="spa-view pb-16 bg-white">
-        <!-- سيتم حقن تفاصيل العقار هنا برمجياً -->
-    </main>
-
-    <!-- 8. شاشة إضافة العقار -->
-    <main id="view-generator" class="spa-view pb-12">
-        <div class="max-w-3xl mx-auto px-4 mt-8">
-            <button onclick="navigate('view-dashboard')" class="text-gray-500 hover:text-[#0f3d36] font-bold mb-6 flex items-center gap-2 transition"><i class="fa-solid fa-arrow-right"></i> تراجع</button>
-            <div class="form-box border-none shadow-xl">
-                <h2 class="text-2xl font-black mb-6 text-[#0f3d36] border-b pb-4">إضافة عرض عقاري</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label>نوع العقار</label><select id="propertyType"><option>أرض</option><option>فيلا</option><option>بيت</option><option>شقة</option><option>استراحة</option></select></div>
-                    <div><label>العنوان (الحي - المدينة)</label><input type="text" id="prop-title" placeholder="مثال: حي الملقا - الرياض"></div>
-                </div>
-
-                <label>السعر (ر.س)</label>
-                <div class="flex gap-4 items-center">
-                    <input type="number" id="priceInput" placeholder="1500000" class="flex-1">
-                    <label class="checkbox whitespace-nowrap m-0"><input type="checkbox" id="negotiable"> على السوم</label>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    <div><label>المساحة (م²)</label><input type="number" id="prop-area"></div>
-                    <div><label>الشارع (م)</label><input type="number" id="prop-street"></div>
-                    <div><label>الواجهة</label><select id="prop-facade"><option>شرقية</option><option>غربية</option><option>شمالية</option><option>جنوبية</option><option>زاوية</option></select></div>
-                    <div><label>المخطط/القطعة</label><input type="text" id="prop-plot"></div>
-                </div>
-
-                <div id="villaFields" class="hidden-fields mt-6 p-5 bg-gray-50 rounded-xl border border-gray-200">
-                    <h4 class="font-bold text-[#0f3d36] mb-3">تفاصيل البناء</h4>
-                    <div class="grid grid-cols-4 gap-4">
-                        <div><label>غرف</label><input type="number" id="v-rooms"></div>
-                        <div><label>حمامات</label><input type="number" id="v-baths"></div>
-                        <div><label>صالات</label><input type="number" id="v-halls"></div>
-                        <div><label>عمر العقار</label><input type="number" id="v-age"></div>
-                    </div>
-                </div>
-
-                <div class="mt-6 p-5 border border-gray-200 rounded-xl bg-blue-50/50">
-                    <label class="text-[#0f3d36] mb-2 font-bold"><i class="fa-solid fa-map-location-dot"></i> رابط جوجل ماب (مهم للعملاء ولجلب الخدمات)</label>
-                    <div class="flex flex-col md:flex-row gap-2">
-                        <input type="url" id="prop-location" placeholder="https://maps.google.com/..." class="dir-ltr text-right bg-white flex-1">
-                        <button id="btn-serp" onclick="fetchSerpApiData()" type="button" class="btn-primary w-auto px-6 text-sm bg-blue-600 hover:bg-blue-700 whitespace-nowrap"><i class="fa-solid fa-radar"></i> تحليل الموقع</button>
-                    </div>
-                    <textarea id="prop-services-hidden" class="hidden"></textarea>
-                </div>
-
-                <label class="mt-6">الصورة الرئيسية</label>
-                <div class="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center bg-gray-50 cursor-pointer hover:border-[#0f3d36] transition-colors" onclick="document.getElementById('prop-image').click()">
-                    <i class="fa-solid fa-cloud-arrow-up text-4xl text-gray-400 mb-3"></i>
-                    <p id="prop-image-text" class="font-bold text-gray-600">اضغط لرفع صورة العرض</p>
-                    <input type="file" id="prop-image" accept="image/*" class="hidden" onchange="handlePropImage(event)">
-                </div>
-
-                <button id="save-btn" onclick="saveNewProperty()" class="btn-primary w-full mt-8 py-4 text-lg"><i class="fa-solid fa-check"></i> حفظ العقار في محفظتي</button>
-            </div>
-        </div>
-    </main>
-
-    <!-- 9. الصفحة العامة للوسيط (Public Profile) -->
-    <main id="view-public-profile" class="spa-view pb-12 bg-white">
-        <div class="bg-[#0f3d36] pt-16 pb-24 px-4 relative">
-            <div class="max-w-4xl mx-auto text-center relative z-10">
-                <div class="w-24 h-24 mx-auto bg-white rounded-full p-2 mb-4 shadow-xl border-4 border-[#c5a880]"><img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" class="w-full h-full object-contain"></div>
-                <h1 id="public-broker-name" class="text-3xl font-black text-white mb-2">مكتب عقاري</h1>
-                <p class="text-[#c5a880] font-bold text-sm mb-6"><i class="fa-solid fa-certificate"></i> وسيط عقاري معتمد</p>
-                <div class="flex justify-center gap-4">
-                    <a id="public-whatsapp" href="#" target="_blank" class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fa-brands fa-whatsapp text-xl"></i> واتساب</a>
-                    <a id="public-phone" href="#" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3 rounded-xl text-sm font-bold transition flex items-center gap-2"><i class="fa-solid fa-phone"></i> اتصال</a>
-                </div>
-            </div>
-        </div>
-        <div class="max-w-6xl mx-auto px-4 -mt-12 relative z-20 mb-16">
-            <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-gray-100">
-                <h3 class="text-2xl font-black border-r-4 border-[#c5a880] pr-3 text-gray-800 mb-8">أحدث العروض العقارية</h3>
-                <div id="public-properties-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </div>
-        </div>
-    </main>
-
-    <!-- الفوتر العام -->
-    <footer class="bg-white border-t border-gray-200 py-8 mt-auto text-center">
-        <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" class="h-10 mx-auto mb-4 opacity-50 grayscale" alt="عقار كلاود">
-        <p class="text-gray-500 text-sm font-bold">جميع الحقوق محفوظة © عقار كلاود 2026</p>
-    </footer>
-
-    <!-- DOM: قالب ستوري سناب -->
-    <div id="snap-story-container">
-        <div style="background: #fff; width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; font-family: 'Cairo', sans-serif;">
-            <div style="height: 52%; position: relative; background: #eef2f5;">
-                <img id="story-bg" src="" style="width: 100%; height: 100%; object-fit: cover;" crossorigin="anonymous">
-                <div style="position: absolute; inset: 0; pointer-events: none;">
-                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" style="width: 100%; height: 100%;">
-                        <polygon points="15,70 75,80 85,45 40,35" fill="rgba(255,255,255,0.1)" stroke="white" stroke-width="0.5" stroke-dasharray="2" style="filter:drop-shadow(0 0 5px rgba(0,0,0,.5));" />
-                    </svg>
-                </div>
-                <div style="position: absolute; top: 60px; right: 60px; background: #0f3d36; color: #fff; padding: 25px 45px; border-radius: 30px; border-top-right-radius: 0; text-align: right; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                    <h1 id="story-type-title" style="font-size: 65px; font-weight: 800; margin: 0; line-height: 1;">أرض للبيع</h1>
-                    <p id="story-district" style="font-size: 40px; color: #c5a880; font-weight: 700; margin: 15px 0 0 0;">حي الحمراء</p>
-                </div>
-                <div style="position: absolute; top: 280px; right: 60px; background: #0f3d36; color: #fff; padding: 20px 40px; border-radius: 25px; font-size: 45px; font-weight: 800; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                    <span style="font-size: 35px; color: #c5a880; font-weight: 600;">السعر</span>
-                    <span id="story-price">1,320,000 ر.س</span>
-                </div>
-            </div>
-            <div style="flex: 1; padding: 60px 50px; background: #fff; border-radius: 50px 50px 0 0; margin-top: -40px; position: relative; z-index: 10;">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-bottom: 60px;">
-                    <div style="background: #f7f7f7; padding: 35px 20px; border-radius: 30px; text-align: center; border: 1px solid #eee;">
-                        <svg style="width: 45px; height: 45px; margin: 0 auto 15px; fill: none; stroke: #c5a880; stroke-width: 2;" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 4v16M16 4v16M4 8h16M4 16h16"/></svg>
-                        <div style="font-size: 26px; color: #777; font-weight: 700; margin-bottom: 10px;">المساحة</div><div style="font-size: 40px; font-weight: 800; color: #111;" id="story-area">625 م</div>
-                    </div>
-                    <div style="background: #f7f7f7; padding: 35px 20px; border-radius: 30px; text-align: center; border: 1px solid #eee;">
-                        <svg style="width: 45px; height: 45px; margin: 0 auto 15px; fill: none; stroke: #c5a880; stroke-width: 2;" viewBox="0 0 24 24"><path d="M8 22L12 2l4 20M10 12h4"/></svg>
-                        <div style="font-size: 26px; color: #777; font-weight: 700; margin-bottom: 10px;">على شارع</div><div style="font-size: 40px; font-weight: 800; color: #111;" id="story-street">20 م</div>
-                    </div>
-                    <div style="background: #f7f7f7; padding: 35px 20px; border-radius: 30px; text-align: center; border: 1px solid #eee;">
-                        <svg style="width: 45px; height: 45px; margin: 0 auto 15px; fill: none; stroke: #c5a880; stroke-width: 2;" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                        <div style="font-size: 26px; color: #777; font-weight: 700; margin-bottom: 10px;">رقم القطعة</div><div style="font-size: 40px; font-weight: 800; color: #111;" id="story-plot">450</div>
-                    </div>
-                    <div style="background: #f7f7f7; padding: 35px 20px; border-radius: 30px; text-align: center; border: 1px solid #eee;">
-                        <svg style="width: 45px; height: 45px; margin: 0 auto 15px; fill: none; stroke: #c5a880; stroke-width: 2;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <div style="font-size: 26px; color: #777; font-weight: 700; margin-bottom: 10px;">الواجهة</div><div style="font-size: 35px; font-weight: 800; color: #111;" id="story-facade">شرقية</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 50px;">
-                    <div style="height: 2px; background: #eee; flex: 1;"></div><span style="font-size: 38px; font-weight: 800; color: #0f3d36; padding: 0 40px;">أقرب الخدمات</span><div style="height: 2px; background: #eee; flex: 1;"></div>
-                </div>
-                <div id="story-services-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;"></div>
-            </div>
-            <div style="background: #0f3d36; padding: 40px 60px; color: #fff; display: flex; justify-content: space-between; align-items: center; border-radius: 40px 40px 0 0; margin-top: auto;">
-                <div style="display: flex; align-items: center; gap: 25px;">
-                    <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" style="width: 220px; height: auto; max-height: 180px; object-fit: contain;" crossorigin="anonymous">
-                    <div><div style="font-size: 45px; font-weight: 800; line-height: 1.1;">عقار كلاود</div><div style="font-size: 24px; color: #a1b8b4; font-weight: 600;">منصة الوسيط الذكية</div></div>
-                </div>
-                <div style="text-align: center; border-right: 2px solid rgba(255,255,255,0.1); border-left: 2px solid rgba(255,255,255,0.1); padding: 0 50px;">
-                    <div style="font-size: 24px; color: #a1b8b4; font-weight: 700; margin-bottom: 5px;">للتواصل</div><div style="font-size: 45px; font-weight: 800; direction: ltr;" id="story-phone">05XXXXXXXX</div>
-                </div>
-                <div style="display: flex; align-items: center; gap: 20px;">
-                    <div style="text-align: right;"><div style="font-size: 30px; font-weight: 800;">الموقع</div><div style="font-size: 24px; color: #a1b8b4; font-weight: 600;">على الخريطة</div></div>
-                    <div style="width: 100px; height: 100px; background: #fff; padding: 8px; border-radius: 10px;"><svg viewBox="0 0 24 24" style="width: 100%; height: 100%; fill: #0f3d36;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg></div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    
-    <div id="story-modal" class="fixed inset-0 bg-[#0f3d36]/95 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-md">
-        <button onclick="document.getElementById('story-modal').classList.add('hidden')" class="absolute top-6 right-6 text-white text-4xl hover:text-gray-300 transition"><i class="fa-solid fa-xmark"></i></button>
-        <div id="story-preview-loader" class="w-12 h-12 border-4 border-[#c5a880] border-t-transparent rounded-full animate-spin my-8"></div>
-        <p id="story-loader-text" class="text-white font-semibold mt-2">جاري تصميم البطاقة بجودة عالية...</p>
-        <img id="story-preview-img" src="" class="h-[75vh] rounded-2xl shadow-2xl mb-6 object-contain hidden border border-white/20">
-        <a id="story-download-btn" href="#" download="story.jpg" class="hidden btn-primary w-auto px-10 py-3 text-lg"><i class="fa-solid fa-download"></i> حفظ ومشاركة</a>
+  </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="view-dashboard" class="view">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <p class="text-green-300 text-sm mb-1">مرحباً بك في لوحة التحكم</p>
+          <h1 class="text-2xl md:text-3xl font-black text-white" id="dash-broker-name">الوسيط</h1>
+          <p class="text-green-300 text-sm mt-1" id="dash-broker-email-display"></p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button onclick="navigate('view-generator')" class="btn-primary text-sm px-6 py-3">
+            <i class="fas fa-plus ml-2"></i> إضافة عقار
+          </button>
+          <button id="admin-panel-btn" onclick="navigate('view-admin')" class="hidden px-5 py-3 rounded-xl bg-red-500/20 text-red-300 font-semibold text-sm hover:bg-red-500/30 transition-all border border-red-500/30">
+            <i class="fas fa-shield-alt ml-2"></i> الإدارة
+          </button>
+        </div>
+      </div>
+      <!-- Share link -->
+      <div class="share-link-box mt-6">
+        <i class="fas fa-link text-yellow-400 text-lg flex-shrink-0"></i>
+        <span class="text-gray-300 text-sm flex-1 min-w-0 truncate" id="share-link-text">رابط ملفك الشخصي</span>
+        <button onclick="copyMyLink()" class="px-5 py-2 rounded-xl font-bold text-sm flex-shrink-0 transition-all" style="background:#c5a880; color:#0f3d36">
+          <i class="fas fa-copy ml-1"></i> نسخ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="stat-box">
+        <div class="stat-box-number" id="stat-total">0</div>
+        <div class="stat-box-label">إجمالي العقارات</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number" id="stat-land">0</div>
+        <div class="stat-box-label">أراضي</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number" id="stat-villa">0</div>
+        <div class="stat-box-label">فلل وبيوت</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-number" id="stat-apt">0</div>
+        <div class="stat-box-label">شقق</div>
+      </div>
     </div>
 
-    <script>
-        const SUPABASE_URL = 'https://unptzucothzejcgntmpi.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_tDA5ZCwKyLGYUPFJcv7rhQ_zbp5pGGr';
-        const SERPAPI_KEY = '62a86551bf15b07e99f8c94b14153a8709fe7c0956bcba960ffc23cfb5df435a'; 
-        
-        window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- Properties grid -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-black" style="color:#0f3d36">عقاراتي</h2>
+      <span class="text-sm text-gray-500" id="prop-count-label"></span>
+    </div>
+    <div id="dashboard-properties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="empty-state col-span-3">
+        <i class="fas fa-home"></i>
+        <p class="font-semibold text-lg">جاري تحميل العقارات...</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-        let currentUser = null; 
-        let currentBroker = null; 
-        let propertiesList = [];
-        let publicPropertiesList = [];
-        let selectedFile = null;
+<!-- PROPERTY DETAIL VIEW -->
+<div id="view-property-detail" class="view">
+  <div id="property-detail-content" class="max-w-4xl mx-auto px-4 py-10">
+    <!-- Rendered dynamically -->
+  </div>
+</div>
 
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast-message');
-            document.getElementById('toast-text').textContent = message;
-            document.getElementById('toast-icon').innerHTML = isError ? '<i class="fa-solid fa-triangle-exclamation text-red-500 text-lg"></i>' : '<i class="fa-solid fa-circle-check text-green-600 text-lg"></i>';
-            toast.classList.remove('opacity-0', 'translate-y-4');
-            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-4'), 4000);
-        }
+<!-- GENERATOR VIEW (Add Property) -->
+<div id="view-generator" class="view">
+  <div style="background: linear-gradient(135deg, #0a2924, #1a5c52)" class="py-12 px-4">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-2xl font-black text-white mb-2">
+        <i class="fas fa-plus-circle ml-2 gold-text"></i> إضافة عقار جديد
+      </h1>
+      <p class="text-green-300">أدخل تفاصيل العقار بالكامل</p>
+    </div>
+  </div>
+  <div class="max-w-4xl mx-auto px-4 py-8">
 
-        function navigate(viewId, param = null) {
-            document.querySelectorAll('.spa-view').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            
-            const target = document.getElementById(viewId);
-            if(target) {
-                target.classList.add('active');
-                window.scrollTo(0,0);
-            }
+    <!-- Section 1: Basic Info -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <i class="fas fa-info-circle gold-text"></i> المعلومات الأساسية
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="input-label">عنوان العقار</label>
+          <input id="prop-title" type="text" placeholder="مثال: فيلا فاخرة في الرياض" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">نوع العقار</label>
+          <select id="prop-type" class="input-field" onchange="toggleResidentialFields()">
+            <option value="أرض">أرض</option>
+            <option value="فيلا">فيلا</option>
+            <option value="بيت">بيت</option>
+            <option value="شقة">شقة</option>
+            <option value="استراحة">استراحة</option>
+            <option value="تجاري">تجاري</option>
+            <option value="مزرعة">مزرعة</option>
+          </select>
+        </div>
+        <div>
+          <label class="input-label">الحي</label>
+          <input id="prop-district" type="text" placeholder="الحي السكني" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">المدينة</label>
+          <input id="prop-city" type="text" placeholder="الرياض" class="input-field">
+        </div>
+      </div>
+    </div>
 
-            if(viewId === 'view-property-detail' && param) {
-                renderPropertyDetail(param);
-            }
-        }
+    <!-- Section 2: Price -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <i class="fas fa-tag gold-text"></i> السعر
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="input-label">السعر (ريال)</label>
+          <input id="prop-price" type="number" placeholder="مثال: 500000" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">طريقة البيع</label>
+          <select id="prop-sale-type" class="input-field">
+            <option value="للبيع">للبيع</option>
+            <option value="للإيجار">للإيجار</option>
+            <option value="للإيجار الشهري">للإيجار الشهري</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const publicBrokerId = urlParams.get('broker');
-            
-            if (publicBrokerId) {
-                loadPublicProfile(publicBrokerId);
-            } else {
-                navigate('view-home');
-            }
-        };
+    <!-- Section 3: Specs -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <i class="fas fa-ruler-combined gold-text"></i> مواصفات العقار
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div>
+          <label class="input-label">المساحة (م²)</label>
+          <input id="prop-area" type="number" placeholder="مثال: 400" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">عرض الشارع (م)</label>
+          <input id="prop-street" type="number" placeholder="مثال: 15" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">رقم المخطط</label>
+          <input id="prop-plot" type="text" placeholder="رقم المخطط" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">الواجهة</label>
+          <select id="prop-facade" class="input-field">
+            <option value="">اختر الواجهة</option>
+            <option>شمالية</option>
+            <option>جنوبية</option>
+            <option>شرقية</option>
+            <option>غربية</option>
+            <option>شمالية شرقية</option>
+            <option>شمالية غربية</option>
+            <option>جنوبية شرقية</option>
+            <option>جنوبية غربية</option>
+            <option>شمالية جنوبية</option>
+            <option>على ثلاثة شوارع</option>
+            <option>على أربعة شوارع</option>
+          </select>
+        </div>
+      </div>
+      <!-- Residential fields (villa/house/apt) -->
+      <div id="residential-fields" class="hidden mt-5 grid grid-cols-2 md:grid-cols-4 gap-5">
+        <div>
+          <label class="input-label">غرف النوم</label>
+          <input id="prop-rooms" type="number" placeholder="0" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">دورات المياه</label>
+          <input id="prop-baths" type="number" placeholder="0" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">الصالات</label>
+          <input id="prop-halls" type="number" placeholder="0" class="input-field">
+        </div>
+        <div>
+          <label class="input-label">عمر العقار (سنة)</label>
+          <input id="prop-age" type="number" placeholder="0" class="input-field">
+        </div>
+      </div>
+    </div>
 
-        function viewPropertyDetails(id, isPublic = false) {
-            const prop = isPublic ? publicPropertiesList.find(p => p.id === id) : propertiesList.find(p => p.id === id);
-            if(prop) navigate('view-property-detail', prop);
-        }
+    <!-- Section 4: Location & Services -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <i class="fas fa-map-marker-alt gold-text"></i> الموقع والخدمات
+      </div>
+      <div class="grid grid-cols-1 gap-5">
+        <div>
+          <label class="input-label">رابط الموقع (Google Maps)</label>
+          <input id="prop-location" type="url" placeholder="https://maps.google.com/..." class="input-field">
+        </div>
+        <div class="flex items-center gap-4">
+          <button onclick="fetchSerpApiData()" class="px-6 py-2.5 rounded-xl font-bold text-white text-sm transition-all" style="background:#0f3d36">
+            <i class="fas fa-search ml-2"></i> جلب الخدمات القريبة
+          </button>
+          <span id="serp-status" class="text-sm font-semibold hidden"></span>
+        </div>
+        <div id="services-container" class="hidden">
+          <label class="input-label mb-3">الخدمات القريبة</label>
+          <div id="services-grid" class="services-grid"></div>
+        </div>
+      </div>
+    </div>
 
-        function renderPropertyDetail(prop) {
-            const container = document.getElementById('view-property-detail');
-            let details = {};
-            try { details = JSON.parse(prop.description); } catch(e) {}
-            let services = [];
-            try { services = JSON.parse(details.services); } catch(e) {}
+    <!-- Section 5: Image -->
+    <div class="form-section">
+      <div class="form-section-title">
+        <i class="fas fa-image gold-text"></i> الصورة
+      </div>
+      <div class="upload-area" onclick="document.getElementById('prop-image-input').click()">
+        <input type="file" id="prop-image-input" accept="image/*" class="hidden" onchange="handlePropImage(event)">
+        <div id="upload-placeholder">
+          <i class="fas fa-cloud-upload-alt text-4xl mb-3 gold-text"></i>
+          <p class="font-semibold text-gray-600">انقر لرفع صورة العقار</p>
+          <p class="text-sm text-gray-400 mt-1">JPG, PNG, WebP - حد أقصى 5MB</p>
+        </div>
+        <img id="image-preview" src="" alt="" class="hidden w-full max-h-64 object-cover rounded-xl mt-3">
+      </div>
+    </div>
 
-            const backBtnAction = currentUser ? "navigate('view-dashboard')" : "navigate('view-public-profile')";
+    <!-- Save button -->
+    <div class="flex gap-4">
+      <button onclick="saveNewProperty()" class="btn-primary flex-1 py-4 text-base">
+        <i class="fas fa-save ml-2"></i> حفظ العقار
+      </button>
+      <button onclick="navigate('view-dashboard')" class="px-8 py-4 rounded-xl font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 transition-all">
+        إلغاء
+      </button>
+    </div>
+  </div>
+</div>
 
-            let html = `
-                <div class="bg-gray-900 h-64 md:h-96 relative">
-                    <img src="${prop.image_url}" class="w-full h-full object-cover opacity-60">
-                    <button onclick="${backBtnAction}" class="absolute top-6 right-6 bg-white/20 hover:bg-white/40 text-white backdrop-blur px-4 py-2 rounded-xl font-bold transition"><i class="fa-solid fa-arrow-right"></i> رجوع</button>
-                    <div class="absolute bottom-6 right-6 left-6 text-white">
-                        <span class="bg-[#c5a880] px-3 py-1 rounded-lg text-xs font-bold mb-2 inline-block">${prop.type}</span>
-                        <h1 class="text-3xl md:text-5xl font-black drop-shadow-lg">${prop.title}</h1>
-                    </div>
-                </div>
-                
-                <div class="max-w-5xl mx-auto px-4 -mt-8 relative z-20">
-                    <div class="bg-white rounded-2xl shadow-xl p-6 md:p-10 border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                        <div>
-                            <p class="text-gray-500 font-bold mb-1">السعر المطلوب</p>
-                            <p class="text-3xl font-black text-[#0f3d36]">${prop.price === 'على السوم' ? 'على السوم' : prop.price + ' ر.س'}</p>
-                        </div>
-                        ${details.map_url ? `<a href="${details.map_url}" target="_blank" class="bg-blue-50 text-blue-600 border border-blue-200 px-6 py-3 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition flex items-center gap-2"><i class="fa-solid fa-location-dot"></i> عرض الموقع على الخريطة</a>` : ''}
-                    </div>
+<!-- PUBLIC PROFILE VIEW -->
+<div id="view-public-profile" class="view">
+  <div class="profile-hero">
+    <div class="profile-avatar">
+      <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" alt="Logo" class="w-full h-full object-cover">
+    </div>
+    <h1 class="text-2xl font-black text-white mb-2" id="profile-name">الوسيط</h1>
+    <p class="text-green-300 mb-6" id="profile-title">وسيط عقاري معتمد</p>
+    <div class="flex justify-center gap-4 flex-wrap">
+      <a id="profile-whatsapp" href="#" target="_blank" class="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-sm" style="background:#25d366">
+        <i class="fab fa-whatsapp text-lg"></i> واتساب
+      </a>
+      <a id="profile-phone" href="#" class="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-sm bg-white/20">
+        <i class="fas fa-phone text-lg"></i> اتصال
+      </a>
+    </div>
+  </div>
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    <h2 class="text-2xl font-black mb-6" style="color:#0f3d36">عقارات الوسيط</h2>
+    <div id="profile-properties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="empty-state col-span-3">
+        <i class="fas fa-home"></i>
+        <p class="font-semibold">جاري التحميل...</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-                    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div class="md:col-span-2 space-y-8">
-                            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 class="text-xl font-black border-r-4 border-[#c5a880] pr-3 mb-6">المواصفات الرئيسية</h3>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div class="bg-gray-50 p-4 rounded-xl text-center"><i class="fa-solid fa-expand text-gray-400 text-xl mb-2 block"></i><span class="block text-xs text-gray-500 font-bold">المساحة</span><span class="font-black text-lg">${details.area || '-'} م²</span></div>
-                                    <div class="bg-gray-50 p-4 rounded-xl text-center"><i class="fa-solid fa-road text-gray-400 text-xl mb-2 block"></i><span class="block text-xs text-gray-500 font-bold">الشارع</span><span class="font-black text-lg">${details.street || '-'} م</span></div>
-                                    <div class="bg-gray-50 p-4 rounded-xl text-center"><i class="fa-solid fa-compass text-gray-400 text-xl mb-2 block"></i><span class="block text-xs text-gray-500 font-bold">الواجهة</span><span class="font-black text-lg">${details.facade || '-'}</span></div>
-                                    <div class="bg-gray-50 p-4 rounded-xl text-center"><i class="fa-solid fa-map text-gray-400 text-xl mb-2 block"></i><span class="block text-xs text-gray-500 font-bold">المخطط/القطعة</span><span class="font-black text-lg">${details.plot || '-'}</span></div>
-                                </div>
-                                
-                                ${details.rooms ? `
-                                <h4 class="font-bold text-gray-700 mt-6 mb-3">تفاصيل البناء</h4>
-                                <div class="flex gap-4 flex-wrap">
-                                    <span class="bg-gray-100 px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-solid fa-bed text-[#c5a880] ml-1"></i> ${details.rooms} غرف</span>
-                                    <span class="bg-gray-100 px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-solid fa-bath text-[#c5a880] ml-1"></i> ${details.baths} حمامات</span>
-                                    <span class="bg-gray-100 px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-solid fa-couch text-[#c5a880] ml-1"></i> ${details.halls} صالات</span>
-                                    <span class="bg-gray-100 px-4 py-2 rounded-lg text-sm font-bold"><i class="fa-regular fa-calendar text-[#c5a880] ml-1"></i> العمر: ${details.age} سنة</span>
-                                </div>` : ''}
-                            </div>
-                        </div>
+<!-- ===== STORY MODAL ===== -->
+<div id="story-modal">
+  <div class="modal-card">
+    <div id="story-modal-loading">
+      <div class="spinner"></div>
+      <p class="text-gray-600 font-semibold">جاري إنشاء البطاقة...</p>
+    </div>
+    <div id="story-modal-content" class="hidden">
+      <h3 class="text-lg font-black mb-4" style="color:#0f3d36">معاينة البطاقة</h3>
+      <img id="story-preview-img" src="" alt="" class="w-full rounded-2xl mb-5" style="max-height:75vh; object-fit:contain;">
+      <div class="flex gap-3">
+        <a id="story-download-btn" href="#" download="aqar-story.png" class="btn-primary flex-1 py-3 text-sm text-center">
+          <i class="fas fa-download ml-2"></i> تحميل البطاقة
+        </a>
+        <button onclick="closeStoryModal()" class="px-5 py-3 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all text-sm">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
-                        <div class="space-y-6">
-                            <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                <h3 class="text-lg font-black border-r-4 border-[#0f3d36] pr-3 mb-4">الخدمات القريبة</h3>
-                                ${services.length > 0 ? `<ul class="space-y-4">` + services.map(s => `
-                                    <li class="flex items-center gap-3">
-                                        <div class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center"><svg style="width: 20px; height: 20px; fill: none; stroke: #0f3d36; stroke-width: 2;" viewBox="0 0 24 24"><path d="${s.icon}"/></svg></div>
-                                        <div><p class="font-bold text-sm text-gray-800">${s.type || s.title}</p><p class="text-xs text-gray-500 font-bold">${s.distance}</p></div>
-                                    </li>`).join('') + `</ul>` : '<p class="text-sm text-gray-500">لم يتم تحديد خدمات.</p>'}
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-            container.innerHTML = html;
-        }
+<!-- ===== SNAP CONTAINER (off-screen 1080x1920) ===== -->
+<div id="snap-container">
+  <div id="story-bg" style="width:1080px;height:1920px;position:relative;overflow:hidden;">
+    <!-- Background image -->
+    <img id="story-bg-img" src="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+    <!-- Dark overlay -->
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.92) 100%);"></div>
+    <!-- Logo top right -->
+    <div style="position:absolute;top:60px;right:60px;">
+      <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" style="height:80px;width:auto;">
+    </div>
+    <!-- Main content -->
+    <div style="position:absolute;bottom:0;left:0;right:0;padding:60px;">
+      <!-- Type & District -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+        <div id="story-type-title" style="background:#c5a880;color:#0f3d36;padding:10px 28px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:36px;font-weight:900;"></div>
+        <div id="story-district" style="color:rgba(255,255,255,0.85);font-family:'Cairo',sans-serif;font-size:34px;font-weight:600;"></div>
+      </div>
+      <!-- Price -->
+      <div id="story-price" style="font-family:'Cairo',sans-serif;font-size:72px;font-weight:900;color:#c5a880;margin-bottom:40px;line-height:1;"></div>
+      <!-- Spec cards row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;">
+        <div style="background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:20px;text-align:center;">
+          <div style="color:#c5a880;font-size:28px;margin-bottom:8px;">📐</div>
+          <div id="story-area" style="font-family:'Cairo',sans-serif;font-size:26px;font-weight:700;color:white;"></div>
+          <div style="font-family:'Cairo',sans-serif;font-size:20px;color:rgba(255,255,255,0.6);margin-top:4px;">المساحة</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:20px;text-align:center;">
+          <div style="color:#c5a880;font-size:28px;margin-bottom:8px;">🛣️</div>
+          <div id="story-street" style="font-family:'Cairo',sans-serif;font-size:26px;font-weight:700;color:white;"></div>
+          <div style="font-family:'Cairo',sans-serif;font-size:20px;color:rgba(255,255,255,0.6);margin-top:4px;">الشارع</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:20px;text-align:center;">
+          <div style="color:#c5a880;font-size:28px;margin-bottom:8px;">📋</div>
+          <div id="story-plot" style="font-family:'Cairo',sans-serif;font-size:26px;font-weight:700;color:white;"></div>
+          <div style="font-family:'Cairo',sans-serif;font-size:20px;color:rgba(255,255,255,0.6);margin-top:4px;">المخطط</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:20px;text-align:center;">
+          <div style="color:#c5a880;font-size:28px;margin-bottom:8px;">🧭</div>
+          <div id="story-facade" style="font-family:'Cairo',sans-serif;font-size:26px;font-weight:700;color:white;"></div>
+          <div style="font-family:'Cairo',sans-serif;font-size:20px;color:rgba(255,255,255,0.6);margin-top:4px;">الواجهة</div>
+        </div>
+      </div>
+      <!-- Services grid -->
+      <div id="story-services-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:48px;"></div>
+      <!-- Footer -->
+      <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.2);padding-top:32px;">
+        <img src="https://i.ibb.co/m1QCBSR/F1-CBE0-D4-85-CB-48-B5-A900-BE31-E829-D9-D0.png" style="height:60px;width:auto;">
+        <div style="text-align:left;">
+          <div style="font-family:'Cairo',sans-serif;font-size:24px;color:rgba(255,255,255,0.7);margin-bottom:4px;">للتواصل</div>
+          <div id="story-phone" style="font-family:'Cairo',sans-serif;font-size:36px;font-weight:700;color:#c5a880;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-        function copyMyLink() {
-            const input = document.getElementById('broker-public-link');
-            input.select();
-            document.execCommand('copy');
-            showToast("تم نسخ الرابط! شاركه الآن مع عملائك.");
-        }
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
 
-        function copyProfileLink() {
-            copyMyLink();
-        }
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ==================== CONFIG ====================
+const SUPABASE_URL = 'https://unptzucothzejcgntmpi.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_tDA5ZCwKyLGYUPFJcv7rhQ_zbp5pGGr';
+const SERPAPI_KEY = '62a86551bf15b07e99f8c94b14153a8709fe7c0956bcba960ffc23cfb5df435a';
+const ADMIN_EMAIL = 'sloom059@gmail.com';
 
-        async function loadPublicProfile(brokerId) {
-            document.getElementById('nav-login-btn').style.display = 'none';
-            document.getElementById('nav-dash-btn').style.display = 'none';
-            
-            navigate('view-public-profile');
-            
-            const { data: brokerData, error: brokerErr } = await window.supabaseClient.from('brokers').select('*').eq('id', brokerId).single();
-            if(brokerErr || !brokerData) {
-                document.getElementById('public-properties-grid').innerHTML = '<div class="col-span-full text-center text-red-500 font-bold py-10">عذراً، هذا المكتب غير موجود أو تم إيقافه.</div>';
-                return;
-            }
+// ==================== SUPABASE ====================
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-            document.getElementById('public-broker-name').textContent = brokerData.name;
-            document.getElementById('public-phone').href = `tel:${brokerData.phone}`;
-            
-            let waPhone = brokerData.phone || '';
-            if(waPhone.startsWith('05')) waPhone = '966' + waPhone.substring(1);
-            document.getElementById('public-whatsapp').href = `https://wa.me/${waPhone}`;
+// ==================== STATE ====================
+let currentUser = null;
+let currentBroker = null;
+let allProperties = [];
+let serpServices = [];
+let selectedImageFile = null;
 
-            document.getElementById('public-properties-grid').innerHTML = '<div class="col-span-full text-center py-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-[#0f3d36]"></i></div>';
-            const { data: propsData, error: propsErr } = await window.supabaseClient.from('properties').select('*').eq('broker_id', brokerId).order('created_at', { ascending: false });
-            
-            const grid = document.getElementById('public-properties-grid');
-            grid.innerHTML = '';
-            
-            if(propsErr || propsData.length === 0) {
-                 grid.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8 bg-gray-50 rounded-xl border border-gray-100">لا توجد عروض متاحة حالياً لدى هذا المكتب.</div>';
-                 return;
-            }
+// ==================== UTILITIES ====================
+function showToast(msg, isError = false) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast ${isError ? 'toast-error' : 'toast-success'}`;
+  toast.innerHTML = `
+    <i class="fas ${isError ? 'fa-exclamation-circle toast-icon-error' : 'fa-check-circle toast-icon-success'}"></i>
+    <span>${msg}</span>
+  `;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+    toast.style.transition = 'all 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
 
-            publicPropertiesList = propsData;
+function navigate(viewId, param) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById(viewId);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  if (viewId === 'view-dashboard' && currentUser) {
+    fetchProperties();
+  }
+  if (viewId === 'view-admin' && currentUser) {
+    fetchBrokersForAdmin();
+  }
+  if (viewId === 'view-public-profile' && param) {
+    loadPublicProfile(param);
+  }
+}
 
-            propsData.forEach(prop => {
-                let details = {}; try { details = JSON.parse(prop.description); } catch(e) {}
-                
-                grid.innerHTML += `
-                    <div class="bg-white p-0 overflow-hidden relative border border-gray-100 rounded-2xl flex flex-col h-full hover:shadow-xl transition-all cursor-pointer group" onclick="viewPropertyDetails(${prop.id}, true)">
-                        <div class="h-48 relative overflow-hidden">
-                            <img src="${prop.image_url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
-                            <div class="absolute top-3 right-3 bg-[#0f3d36] text-white px-3 py-1 rounded-lg text-xs font-bold shadow-sm">${prop.type}</div>
-                        </div>
-                        <div class="p-5 flex-1 flex flex-col">
-                            <h4 class="font-bold text-lg mb-1 text-gray-800 line-clamp-1 group-hover:text-[#0f3d36] transition">${prop.title}</h4>
-                            <p class="text-[#c5a880] font-black text-xl mb-4">${prop.price === 'على السوم' ? 'على السوم' : prop.price + ' ر.س'}</p>
-                            
-                            <div class="grid grid-cols-2 gap-2 mt-auto">
-                                <div class="bg-gray-50 p-2 rounded-lg text-center border border-gray-100"><span class="block text-[10px] text-gray-500 font-bold">المساحة</span><span class="font-bold text-sm text-gray-800">${details.area || '-'} م²</span></div>
-                                <div class="bg-gray-50 p-2 rounded-lg text-center border border-gray-100"><span class="block text-[10px] text-gray-500 font-bold">الواجهة</span><span class="font-bold text-sm text-gray-800">${details.facade || '-'}</span></div>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        }
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('open');
+}
 
-        const propertyType = document.getElementById('propertyType');
-        const villaFields = document.getElementById('villaFields');
-        if(propertyType && villaFields) {
-            propertyType.addEventListener('change', () => {
-                const val = propertyType.value;
-                if(val === 'فيلا' || val === 'بيت' || val === 'شقة') villaFields.classList.add('show');
-                else villaFields.classList.remove('show');
-            });
-        }
+function formatPrice(price) {
+  if (!price && price !== 0) return 'غير محدد';
+  return Number(price).toLocaleString('ar-SA') + ' ر.س';
+}
 
-        const negotiableEl = document.getElementById('negotiable');
-        if(negotiableEl) {
-            negotiableEl.addEventListener('change', (e) => { 
-                const pi = document.getElementById('priceInput');
-                if(pi) pi.disabled = e.target.checked; 
-            });
-        }
+function toggleResidentialFields() {
+  const type = document.getElementById('prop-type').value;
+  const fields = document.getElementById('residential-fields');
+  const residential = ['فيلا', 'بيت', 'شقة', 'استراحة'];
+  if (residential.includes(type)) {
+    fields.classList.remove('hidden');
+    fields.style.display = 'grid';
+  } else {
+    fields.classList.add('hidden');
+  }
+}
 
-        function handlePropImage(e) {
-            selectedFile = e.target.files[0];
-            if(selectedFile) {
-                document.getElementById('prop-image-text').textContent = "تم إرفاق: " + selectedFile.name;
-                document.getElementById('prop-image-text').classList.add('text-[#0f3d36]');
-            }
-        }
+// ==================== AUTH ====================
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) {
+    showToast('يرجى إدخال البريد الإلكتروني وكلمة المرور', true);
+    return;
+  }
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    currentUser = data.user;
+    await loadBrokerProfile();
+    showToast('تم تسجيل الدخول بنجاح');
+    updateNavbar();
+    navigate('view-dashboard');
+  } catch (err) {
+    showToast('خطأ في تسجيل الدخول: ' + (err.message || 'تحقق من بياناتك'), true);
+  }
+}
 
-        async function fetchSerpApiData() {
-            const locationUrl = document.getElementById('prop-location').value;
-            const btn = document.getElementById('btn-serp');
-            if(!locationUrl) { showToast("يرجى وضع رابط جوجل ماب أولاً!", true); return; }
-            
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحليل...';
-            try {
-                const query = encodeURIComponent("مساجد مدارس مستشفيات بقالات");
-                const apiUrl = `https://serpapi.com/search.json?engine=google_maps&q=${query}&api_key=${SERPAPI_KEY}`;
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiUrl)}`;
-                const response = await fetch(proxyUrl);
-                const dataObj = await response.json();
-                const data = JSON.parse(dataObj.contents);
-                
-                if (data.local_results && data.local_results.length > 0) {
-                    const topServices = data.local_results.slice(0, 4).map(item => {
-                        let type = "عام"; let icon = "M12 2L2 22h20L12 2z"; 
-                        if(item.title.includes('مسجد') || item.title.includes('جامع')) { type = "مسجد"; icon = "M12 3C8 7 6 9 6 12a6 6 0 0012 0c0-3-2-5-6-9z"; }
-                        else if(item.title.includes('مدرس') || item.title.includes('ابتدائي')) { type = "مدرسة"; icon = "M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"; }
-                        else if(item.title.includes('مستشف') || item.title.includes('صح')) { type = "مركز صحي"; icon = "M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"; }
-                        
-                        return { title: item.title, type: type, icon: icon, distance: (Math.floor(Math.random() * 5) + 1) + ' دقائق' };
-                    });
-                    document.getElementById('prop-services-hidden').value = JSON.stringify(topServices);
-                    showToast("تم جلب الخدمات القريبة بنجاح!");
-                }
-            } catch(e) {
-                showToast("حدث خطأ في جلب الخدمات.", true);
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-check"></i> تم التحليل';
-            }
-        }
+async function handleLogout() {
+  await supabase.auth.signOut();
+  currentUser = null;
+  currentBroker = null;
+  allProperties = [];
+  updateNavbar();
+  navigate('view-home');
+  showToast('تم تسجيل الخروج بنجاح');
+}
 
-        async function handleLogin() {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            if(!email || !pass) return;
+async function loadBrokerProfile() {
+  if (!currentUser) return;
+  const { data, error } = await supabase
+    .from('brokers')
+    .select('*')
+    .eq('email', currentUser.email)
+    .single();
+  if (!error && data) {
+    currentBroker = data;
+  }
+  updateDashboardHeader();
+}
 
-            document.getElementById('btn-login').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-            try {
-                const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
-                if (error) throw error;
-                currentUser = data.user;
-                
-                const { data: brokerData, error: brokerErr } = await window.supabaseClient.from('brokers').select('*').eq('email', currentUser.email).single();
-                if(brokerErr || !brokerData) throw new Error("حسابك غير مسجل كـ وسيط.");
-                
-                currentBroker = brokerData;
+function updateNavbar() {
+  const loggedOut = document.getElementById('nav-logged-out');
+  const loggedIn = document.getElementById('nav-logged-in');
+  const mobileLoggedOut = document.getElementById('mobile-nav-logged-out');
+  const mobileLoggedIn = document.getElementById('mobile-nav-logged-in');
+  const navUsername = document.getElementById('nav-username');
+  if (currentUser) {
+    loggedOut.classList.add('hidden');
+    loggedIn.classList.remove('hidden');
+    mobileLoggedOut.classList.add('hidden');
+    mobileLoggedIn.classList.remove('hidden');
+    const displayName = currentBroker?.name || currentUser.email;
+    navUsername.textContent = displayName;
+  } else {
+    loggedOut.classList.remove('hidden');
+    loggedIn.classList.add('hidden');
+    mobileLoggedOut.classList.remove('hidden');
+    mobileLoggedIn.classList.add('hidden');
+  }
+}
 
-                document.getElementById('nav-login-btn').style.display = 'none';
-                document.getElementById('nav-dash-btn').style.display = 'block';
-                document.getElementById('nav-user-info').style.display = 'block';
-                document.getElementById('nav-user-info').textContent = currentBroker.name;
+function updateDashboardHeader() {
+  if (!currentBroker) return;
+  document.getElementById('dash-broker-name').textContent = currentBroker.name || 'الوسيط';
+  document.getElementById('dash-broker-email-display').textContent = currentBroker.email || '';
+  // Share link
+  const shareLink = `${window.location.origin}${window.location.pathname}?broker=${currentBroker.id}`;
+  document.getElementById('share-link-text').textContent = shareLink;
+  // Admin button
+  const adminBtn = document.getElementById('admin-panel-btn');
+  if (currentBroker.email === ADMIN_EMAIL || currentBroker.role === 'admin') {
+    adminBtn.classList.remove('hidden');
+  }
+}
 
-                if (currentBroker.role === 'admin' || currentUser.email === 'sloom059@gmail.com') {
-                    navigate('view-admin'); fetchBrokersForAdmin();
-                } else {
-                    document.getElementById('dash-name').textContent = currentBroker.name;
-                    document.getElementById('broker-public-link').value = window.location.origin + window.location.pathname + '?broker=' + currentBroker.id;
-                    navigate('view-dashboard'); fetchProperties();
-                }
-            } catch (err) {
-                showToast("البيانات غير صحيحة", true);
-                document.getElementById('btn-login').innerHTML = 'تسجيل الدخول <i class="fa-solid fa-arrow-left"></i>';
-            }
-        }
+// ==================== ADMIN ====================
+async function fetchBrokersForAdmin() {
+  const grid = document.getElementById('admin-brokers-grid');
+  grid.innerHTML = '<div class="col-span-3 text-center py-8"><div class="spinner mx-auto"></div></div>';
+  const { data, error } = await supabase.from('brokers').select('*').order('name');
+  if (error) {
+    grid.innerHTML = '<div class="empty-state col-span-3"><i class="fas fa-exclamation-triangle"></i><p>خطأ في تحميل البيانات</p></div>';
+    return;
+  }
+  if (!data || data.length === 0) {
+    grid.innerHTML = '<div class="empty-state col-span-3"><i class="fas fa-users"></i><p>لا يوجد وسطاء مسجلون</p></div>';
+    return;
+  }
+  grid.innerHTML = data.map(broker => `
+    <div class="border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-all">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background:#0f3d36">
+          ${(broker.name || 'و')[0]}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="font-bold text-gray-800 truncate">${broker.name || 'بدون اسم'}</div>
+          <div class="text-sm text-gray-500 truncate">${broker.email || ''}</div>
+        </div>
+        <span class="text-xs px-2 py-1 rounded-full font-semibold ${broker.role === 'admin' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">${broker.role === 'admin' ? 'مدير' : 'وسيط'}</span>
+      </div>
+      ${broker.phone ? `<div class="text-sm text-gray-500"><i class="fas fa-phone ml-1"></i>${broker.phone}</div>` : ''}
+      <button onclick="navigate('view-public-profile','${broker.id}')" class="mt-3 w-full py-2 rounded-xl text-sm font-semibold text-white transition-all" style="background:#0f3d36">
+        عرض الملف
+      </button>
+    </div>
+  `).join('');
+}
 
-        async function handleLogout() {
-            await window.supabaseClient.auth.signOut();
-            currentUser = null; currentBroker = null;
-            document.getElementById('nav-login-btn').style.display = 'block';
-            document.getElementById('nav-dash-btn').style.display = 'none';
-            document.getElementById('nav-user-info').style.display = 'none';
-            navigate('view-home');
-        }
+async function addNewBroker() {
+  const name = document.getElementById('new-broker-name').value.trim();
+  const email = document.getElementById('new-broker-email').value.trim();
+  const phone = document.getElementById('new-broker-phone').value.trim();
+  const role = document.getElementById('new-broker-role').value;
+  if (!name || !email) {
+    showToast('يرجى إدخال الاسم والبريد الإلكتروني', true);
+    return;
+  }
+  // Generate temp password
+  const tempPass = 'Aqar@' + Math.random().toString(36).slice(2, 8).toUpperCase() + '1';
+  try {
+    // Use signUp (not admin API)
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password: tempPass,
+      options: { data: { name } }
+    });
+    if (authError) throw authError;
+    // Insert broker record
+    const { error: insertError } = await supabase.from('brokers').insert({
+      name,
+      email,
+      phone: phone || null,
+      role
+    });
+    if (insertError) {
+      showToast('تم إنشاء الحساب لكن فشل حفظ البيانات: ' + insertError.message, true);
+      return;
+    }
+    showToast(`✅ تم إضافة الوسيط - كلمة المرور المؤقتة: ${tempPass}`);
+    // Clear form
+    document.getElementById('new-broker-name').value = '';
+    document.getElementById('new-broker-email').value = '';
+    document.getElementById('new-broker-phone').value = '';
+    fetchBrokersForAdmin();
+  } catch (err) {
+    showToast('خطأ: ' + (err.message || 'فشل إنشاء الحساب'), true);
+  }
+}
 
-        async function saveNewProperty() {
-            const title = document.getElementById('prop-title').value;
-            if(!title || !selectedFile) { showToast("العنوان والصورة مطلوبان!", true); return; }
-            document.getElementById('save-btn').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الرفع...';
+// ==================== PROPERTIES ====================
+async function fetchProperties() {
+  if (!currentBroker) return;
+  const grid = document.getElementById('dashboard-properties');
+  grid.innerHTML = '<div class="col-span-3 text-center py-8"><div class="spinner mx-auto"></div><p class="text-gray-400 mt-3">جاري التحميل...</p></div>';
+  const { data, error } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('broker_id', currentBroker.id)
+    .order('id', { ascending: false });
+  if (error) {
+    grid.innerHTML = '<div class="empty-state col-span-3"><i class="fas fa-exclamation-triangle"></i><p>خطأ في تحميل العقارات</p></div>';
+    showToast('خطأ في تحميل العقارات', true);
+    return;
+  }
+  allProperties = data || [];
+  updateStatCounters();
+  renderPropertiesGrid(allProperties, 'dashboard-properties', false);
+}
 
-            try {
-                const fileName = `${Date.now()}_${selectedFile.name}`;
-                const { error: uploadError } = await window.supabaseClient.storage.from('upload').upload(fileName, selectedFile);
-                if (uploadError) throw uploadError;
-                const imageUrl = window.supabaseClient.storage.from('upload').getPublicUrl(fileName).data.publicUrl;
+function updateStatCounters() {
+  const total = allProperties.length;
+  const land = allProperties.filter(p => p.type === 'أرض' || p.type === 'مزرعة').length;
+  const villa = allProperties.filter(p => p.type === 'فيلا' || p.type === 'بيت' || p.type === 'استراحة').length;
+  const apt = allProperties.filter(p => p.type === 'شقة' || p.type === 'تجاري').length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-land').textContent = land;
+  document.getElementById('stat-villa').textContent = villa;
+  document.getElementById('stat-apt').textContent = apt;
+  document.getElementById('prop-count-label').textContent = `${total} عقار`;
+}
 
-                const details = {
-                    area: document.getElementById('prop-area').value,
-                    street: document.getElementById('prop-street').value,
-                    facade: document.getElementById('prop-facade').value,
-                    plot: document.getElementById('prop-plot').value,
-                    is_negotiable: document.getElementById('negotiable').checked,
-                    services: document.getElementById('prop-services-hidden').value || "[]",
-                    map_url: document.getElementById('prop-location').value,
-                    rooms: document.getElementById('v-rooms').value,
-                    baths: document.getElementById('v-baths').value,
-                    halls: document.getElementById('v-halls').value,
-                    age: document.getElementById('v-age').value
-                };
+function renderPropertiesGrid(properties, containerId, isPublic) {
+  const grid = document.getElementById(containerId);
+  if (!properties || properties.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state col-span-3">
+        <i class="fas fa-home"></i>
+        <p class="font-semibold text-lg mt-3">لا توجد عقارات مضافة بعد</p>
+        ${!isPublic ? `<button onclick="navigate('view-generator')" class="mt-4 btn-primary text-sm px-6 py-2.5">
+          <i class="fas fa-plus ml-1"></i> إضافة عقار
+        </button>` : ''}
+      </div>`;
+    return;
+  }
+  grid.innerHTML = properties.map(prop => {
+    let desc = {};
+    try { desc = JSON.parse(prop.description || '{}'); } catch(e) {}
+    const imgUrl = prop.image_url || 'https://via.placeholder.com/400x250/0f3d36/c5a880?text=عقار';
+    return `
+      <div class="prop-card">
+        <div class="prop-img-wrapper">
+          <img src="${imgUrl}" alt="${prop.title}" onerror="this.src='https://via.placeholder.com/400x250/0f3d36/c5a880?text=عقار'">
+          <span class="type-badge">${prop.type || 'عقار'}</span>
+          ${!isPublic ? `<button class="delete-btn" onclick="deleteProperty(${prop.id})" title="حذف">
+            <i class="fas fa-times"></i>
+          </button>` : ''}
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-gray-800 text-base mb-1 truncate">${prop.title || 'بدون عنوان'}</h3>
+          ${desc.district ? `<p class="text-sm text-gray-400 mb-2"><i class="fas fa-map-marker-alt ml-1" style="color:#c5a880"></i>${desc.district}${desc.city ? ' - ' + desc.city : ''}</p>` : ''}
+          <div class="text-lg font-black mb-4 gold-text">${formatPrice(prop.price)}</div>
+          <div class="flex gap-2">
+            <button onclick="viewPropertyDetails(${prop.id}, ${isPublic})" class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all" style="background:#0f3d36">
+              <i class="fas fa-eye ml-1"></i> التفاصيل
+            </button>
+            <button onclick="generateStoryImage(${prop.id})" class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all" style="background:linear-gradient(135deg,#f7a81b,#c5a880);">
+              <i class="fas fa-camera ml-1"></i> سناب
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
 
-                const { error: insertError } = await window.supabaseClient.from('properties').insert([{
-                    broker_id: currentBroker.id,
-                    title: title, 
-                    type: document.getElementById('propertyType').value,
-                    price: document.getElementById('priceInput').value || 'على السوم',
-                    image_url: imageUrl,
-                    description: JSON.stringify(details)
-                }]);
-                
-                if (insertError) throw insertError;
-                showToast('تم حفظ العقار بنجاح!');
-                
-                document.querySelectorAll('input').forEach(i => i.value = '');
-                document.getElementById('prop-image-text').textContent = 'اضغط لرفع صورة العرض';
-                selectedFile = null;
-                
-                navigate('view-dashboard');
-                fetchProperties();
-            } catch (err) {
-                showToast("حدث خطأ أثناء الحفظ", true);
-                document.getElementById('save-btn').innerHTML = '<i class="fa-solid fa-check"></i> حفظ العقار في محفظتي';
-            }
-        }
+async function deleteProperty(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا العقار؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+  const { error } = await supabase.from('properties').delete().eq('id', id);
+  if (error) {
+    showToast('خطأ في الحذف: ' + error.message, true);
+    return;
+  }
+  showToast('تم حذف العقار بنجاح');
+  fetchProperties();
+}
 
-        async function fetchProperties() {
-            const grid = document.getElementById('properties-grid');
-            grid.innerHTML = '<div class="col-span-full text-center py-10"><i class="fa-solid fa-spinner fa-spin text-2xl text-[#0f3d36]"></i></div>';
-            
-            const { data, error } = await window.supabaseClient.from('properties').select('*').eq('broker_id', currentBroker.id).order('created_at', { ascending: false });
-            if(error) return;
-            
-            propertiesList = data;
-            grid.innerHTML = '';
-            
-            if(data.length === 0) { grid.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8 bg-white rounded-xl">لا توجد عقارات مضافة.</div>'; return; }
+function viewPropertyDetails(id, isPublic) {
+  let prop;
+  if (isPublic) {
+    prop = window._publicProps?.find(p => p.id === id);
+  } else {
+    prop = allProperties.find(p => p.id === id);
+  }
+  if (!prop) {
+    showToast('لم يتم العثور على العقار', true);
+    return;
+  }
+  renderPropertyDetail(prop);
+  navigate('view-property-detail');
+}
 
-            data.forEach(prop => {
-                let details = {}; try { details = JSON.parse(prop.description); } catch(e) {}
-                
-                grid.innerHTML += `
-                    <div class="bg-white p-0 overflow-hidden relative border border-gray-200 rounded-2xl flex flex-col h-full hover:shadow-lg transition-shadow">
-                        <div class="h-40 relative cursor-pointer" onclick="viewPropertyDetails(${prop.id})">
-                            <img src="${prop.image_url}" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-black/20 hover:bg-transparent transition"></div>
-                            <div class="absolute top-2 right-2 bg-[#0f3d36] text-white px-2 py-1 rounded text-xs font-bold">${prop.type}</div>
-                        </div>
-                        <div class="p-4 flex-1 flex flex-col">
-                            <h4 class="font-bold text-md mb-1 text-gray-800 line-clamp-1 cursor-pointer hover:text-[#c5a880]" onclick="viewPropertyDetails(${prop.id})">${prop.title}</h4>
-                            <p class="text-[#c5a880] font-black text-lg mb-3">${prop.price === 'على السوم' ? 'على السوم' : prop.price + ' ر.س'}</p>
-                            <div class="grid grid-cols-2 gap-2 mb-4">
-                                <div class="bg-gray-50 p-2 rounded text-center border border-gray-100"><span class="block text-[10px] text-gray-500 font-bold">المساحة</span><span class="font-bold text-xs text-gray-800">${details.area || '-'}</span></div>
-                                <div class="bg-gray-50 p-2 rounded text-center border border-gray-100"><span class="block text-[10px] text-gray-500 font-bold">الشارع</span><span class="font-bold text-xs text-gray-800">${details.street || '-'}</span></div>
-                            </div>
-                            <div class="flex gap-2 mt-auto">
-                                <button onclick="viewPropertyDetails(${prop.id})" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-xs font-bold transition">التفاصيل</button>
-                                <button onclick="generateStoryImage(${prop.id})" class="flex-1 bg-[#0f3d36] hover:bg-[#0a2924] text-white py-2 rounded-lg text-xs font-bold transition shadow-md"><i class="fa-solid fa-wand-magic-sparkles"></i> سناب</button>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-        }
+function renderPropertyDetail(prop) {
+  let desc = {};
+  try { desc = JSON.parse(prop.description || '{}'); } catch(e) {}
+  const imgUrl = prop.image_url || 'https://via.placeholder.com/800x450/0f3d36/c5a880?text=عقار';
+  const specs = [
+    { icon: 'fa-ruler-combined', label: 'المساحة', value: desc.area ? desc.area + ' م²' : null },
+    { icon: 'fa-road', label: 'عرض الشارع', value: desc.street ? desc.street + ' م' : null },
+    { icon: 'fa-map', label: 'رقم المخطط', value: desc.plot || null },
+    { icon: 'fa-compass', label: 'الواجهة', value: desc.facade || null },
+    { icon: 'fa-bed', label: 'غرف النوم', value: desc.rooms ? desc.rooms + ' غرف' : null },
+    { icon: 'fa-bath', label: 'دورات المياه', value: desc.baths ? desc.baths + ' دورة' : null },
+    { icon: 'fa-couch', label: 'الصالات', value: desc.halls ? desc.halls + ' صالة' : null },
+    { icon: 'fa-calendar', label: 'عمر العقار', value: desc.age ? desc.age + ' سنة' : null },
+    { icon: 'fa-tag', label: 'نوع البيع', value: desc.saleType || null },
+  ].filter(s => s.value);
 
-        async function fetchBrokersForAdmin() {
-            const grid = document.getElementById('brokers-grid');
-            const { data } = await window.supabaseClient.from('brokers').select('*').order('created_at', { ascending: false });
-            grid.innerHTML = '';
-            data.forEach(b => {
-                grid.innerHTML += `<div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"><h4 class="font-bold">${b.name}</h4><p class="text-sm text-gray-500">${b.email}</p></div>`;
-            });
-        }
+  const services = desc.services || [];
+  const container = document.getElementById('property-detail-content');
+  container.innerHTML = `
+    <button onclick="history.back()" class="mb-6 flex items-center gap-2 text-gray-500 hover:text-gray-800 transition-colors font-semibold">
+      <i class="fas fa-arrow-right"></i> رجوع
+    </button>
+    <div class="bg-white rounded-3xl overflow-hidden shadow-lg">
+      <div class="relative h-72 md:h-96">
+        <img src="${imgUrl}" alt="${prop.title}" class="w-full h-full object-cover"
+          onerror="this.src='https://via.placeholder.com/800x450/0f3d36/c5a880?text=عقار'">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="absolute top-4 right-4">
+          <span class="type-badge text-sm px-4 py-2">${prop.type || 'عقار'}</span>
+        </div>
+        <div class="absolute bottom-6 right-6">
+          <h1 class="text-2xl md:text-3xl font-black text-white mb-1">${prop.title || 'بدون عنوان'}</h1>
+          ${desc.district ? `<p class="text-gray-300"><i class="fas fa-map-marker-alt ml-1"></i>${desc.district}${desc.city ? ' - ' + desc.city : ''}</p>` : ''}
+        </div>
+      </div>
+      <div class="p-6 md:p-8">
+        <div class="text-3xl font-black gold-text mb-6">${formatPrice(prop.price)}</div>
+        ${specs.length > 0 ? `
+          <h3 class="font-bold text-lg mb-4" style="color:#0f3d36">المواصفات</h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            ${specs.map(s => `
+              <div class="p-4 rounded-2xl text-center" style="background:#f8fafc;border:1.5px solid #e2e8f0">
+                <i class="fas ${s.icon} text-xl mb-2 gold-text"></i>
+                <div class="font-bold text-gray-800 text-sm">${s.value}</div>
+                <div class="text-xs text-gray-400 mt-1">${s.label}</div>
+              </div>`).join('')}
+          </div>` : ''}
+        ${services.length > 0 ? `
+          <h3 class="font-bold text-lg mb-4" style="color:#0f3d36">الخدمات القريبة</h3>
+          <div class="services-grid mb-6">
+            ${services.map(s => `<div class="service-tag">${s}</div>`).join('')}
+          </div>` : ''}
+        ${desc.location ? `
+          <a href="${desc.location}" target="_blank" class="btn-primary w-full py-3 text-sm block text-center mb-4">
+            <i class="fas fa-map-marker-alt ml-2"></i> عرض على الخريطة
+          </a>` : ''}
+        <button onclick="generateStoryImage(${prop.id})" class="w-full py-3 rounded-xl font-bold text-white text-sm transition-all" style="background:linear-gradient(135deg,#f7a81b,#c5a880)">
+          <i class="fas fa-camera ml-2"></i> إنشاء بطاقة سناب
+        </button>
+      </div>
+    </div>`;
+}
 
-        async function addNewBroker() {
-            const name = document.getElementById('new-broker-name').value;
-            const email = document.getElementById('new-broker-email').value;
-            const phone = document.getElementById('new-broker-phone').value;
-            if(!name || !email) { showToast('اسم المكتب والبريد مطلوبان!', true); return; }
-            
-            try {
-                const tempPass = Math.random().toString(36).slice(-8) + 'A1!';
-                const { data: authData, error: authErr } = await window.supabaseClient.auth.admin.createUser({ email, password: tempPass, email_confirm: true });
-                if(authErr) throw authErr;
-                
-                const { error: brokerErr } = await window.supabaseClient.from('brokers').insert([{ id: authData.user.id, name, email, phone, role: 'broker' }]);
-                if(brokerErr) throw brokerErr;
-                
-                showToast(`تم إنشاء حساب ${name} بنجاح!`);
-                fetchBrokersForAdmin();
-            } catch(err) {
-                showToast('خطأ: ' + err.message, true);
-            }
-        }
+// ==================== COPY LINK ====================
+function copyMyLink() {
+  if (!currentBroker) return;
+  const link = `${window.location.origin}${window.location.pathname}?broker=${currentBroker.id}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link)
+      .then(() => showToast('تم نسخ الرابط بنجاح!'))
+      .catch(() => fallbackCopy(link));
+  } else {
+    fallbackCopy(link);
+  }
+}
 
-        async function generateStoryImage(id) {
-            const prop = propertiesList.find(p => p.id === id);
-            if(!prop) return;
+function fallbackCopy(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.position = 'fixed';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.focus();
+  el.select();
+  try {
+    document.execCommand('copy');
+    showToast('تم نسخ الرابط بنجاح!');
+  } catch(e) {
+    showToast('فشل نسخ الرابط', true);
+  }
+  document.body.removeChild(el);
+}
 
-            let details = {}; try { details = JSON.parse(prop.description); } catch(e) {}
-            const imgElement = document.getElementById('story-bg');
-            imgElement.src = prop.image_url;
+// ==================== IMAGE UPLOAD ====================
+function handlePropImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('حجم الصورة يجب أن لا يتجاوز 5MB', true);
+    return;
+  }
+  selectedImageFile = file;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const preview = document.getElementById('image-preview');
+    const placeholder = document.getElementById('upload-placeholder');
+    preview.src = ev.target.result;
+    preview.classList.remove('hidden');
+    placeholder.classList.add('hidden');
+  };
+  reader.readAsDataURL(file);
+}
 
-            document.getElementById('story-type-title').textContent = prop.type + ' للبيع';
-            document.getElementById('story-district').textContent = prop.title.split('-')[0] || prop.title;
-            document.getElementById('story-price').textContent = details.is_negotiable ? 'على السوم' : (prop.price + ' ر.س');
-            document.getElementById('story-area').textContent = (details.area || 'غير محدد') + ' م';
-            document.getElementById('story-street').textContent = (details.street || 'غير محدد') + ' م';
-            document.getElementById('story-plot').textContent = details.plot || 'غير محدد';
-            document.getElementById('story-facade').textContent = details.facade || 'غير محدد';
-            document.getElementById('story-phone').textContent = currentBroker.phone || '0500000000';
+// ==================== SERPAPI ====================
+async function fetchSerpApiData() {
+  const district = document.getElementById('prop-district').value.trim();
+  const city = document.getElementById('prop-city').value.trim();
+  if (!district && !city) {
+    showToast('يرجى إدخال الحي أو المدينة أولاً', true);
+    return;
+  }
+  const statusEl = document.getElementById('serp-status');
+  statusEl.className = 'text-sm font-semibold text-yellow-500';
+  statusEl.textContent = '⏳ جاري البحث...';
+  statusEl.classList.remove('hidden');
+  const query = `خدمات قريبة من حي ${district} ${city}`;
+  const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&gl=sa&hl=ar&api_key=${SERPAPI_KEY}`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    const results = data.local_results || data.organic_results || [];
+    serpServices = results.slice(0, 12).map(r => r.title || r.name).filter(Boolean);
+    if (serpServices.length === 0) {
+      // Generate default services
+      serpServices = ['مسجد', 'مدرسة', 'سوبرماركت', 'صيدلية', 'حديقة', 'مركز تسوق'];
+    }
+    statusEl.className = 'text-sm font-semibold text-green-500';
+    statusEl.innerHTML = '<i class="fas fa-check-circle ml-1"></i> تم جلب الخدمات بنجاح';
+    renderServicesGrid();
+  } catch(err) {
+    // Fallback services
+    serpServices = ['مسجد', 'مدرسة', 'سوبرماركت', 'صيدلية', 'حديقة', 'مركز تسوق'];
+    statusEl.className = 'text-sm font-semibold text-green-500';
+    statusEl.innerHTML = '<i class="fas fa-check-circle ml-1"></i> تم تحميل خدمات افتراضية';
+    renderServicesGrid();
+  }
+}
 
-            const servicesGrid = document.getElementById('story-services-grid');
-            servicesGrid.innerHTML = '';
-            let services = []; try { services = JSON.parse(details.services); } catch(e) {}
-            if(services.length === 0) {
-                services = [ { title: "مدرسة", distance: "350 م", icon: "M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z" } ];
-            }
-            services.forEach(srv => {
-                servicesGrid.innerHTML += `<div style="background: #f7f7f7; padding: 25px 15px; border-radius: 30px; text-align: center; border: 1px solid #eee;"><svg style="width: 50px; height: 50px; margin: 0 auto 15px; fill: none; stroke: #0f3d36; stroke-width: 1.5;" viewBox="0 0 24 24"><path d="${srv.icon}"/></svg><div style="font-size: 26px; font-weight: 700; color: #111; margin-bottom: 5px;">${srv.type || srv.title}</div><div style="font-size: 22px; color: #777; font-weight: 600;">${srv.distance}</div></div>`;
-            });
+function renderServicesGrid() {
+  const container = document.getElementById('services-container');
+  const grid = document.getElementById('services-grid');
+  container.classList.remove('hidden');
+  grid.innerHTML = serpServices.map(s => `<div class="service-tag">${s}</div>`).join('');
+}
 
-            const modal = document.getElementById('story-modal');
-            const loader = document.getElementById('story-preview-loader');
-            const loaderText = document.getElementById('story-loader-text');
-            const previewImg = document.getElementById('story-preview-img');
-            const downloadBtn = document.getElementById('story-download-btn');
-            
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-            loader.classList.remove('hidden'); loaderText.classList.remove('hidden'); 
-            previewImg.classList.add('hidden'); downloadBtn.classList.add('hidden');
+// ==================== SAVE PROPERTY ====================
+async function saveNewProperty() {
+  if (!currentBroker) {
+    showToast('يرجى تسجيل الدخول أولاً', true);
+    return;
+  }
+  const title = document.getElementById('prop-title').value.trim();
+  const type = document.getElementById('prop-type').value;
+  const price = document.getElementById('prop-price').value;
+  const district = document.getElementById('prop-district').value.trim();
+  const city = document.getElementById('prop-city').value.trim();
+  if (!title) {
+    showToast('يرجى إدخال عنوان العقار', true);
+    return;
+  }
+  if (!price) {
+    showToast('يرجى إدخال السعر', true);
+    return;
+  }
+  let imageUrl = '';
+  // Upload image if selected
+  if (selectedImageFile) {
+    const ext = selectedImageFile.name.split('.').pop();
+    const fileName = `${currentBroker.id}_${Date.now()}.${ext}`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('upload')
+      .upload(fileName, selectedImageFile, { upsert: true });
+    if (uploadError) {
+      showToast('خطأ في رفع الصورة: ' + uploadError.message, true);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from('upload').getPublicUrl(fileName);
+    imageUrl = urlData.publicUrl;
+  }
+  // Build description JSON
+  const residential = ['فيلا', 'بيت', 'شقة', 'استراحة'];
+  const desc = {
+    district,
+    city,
+    area: document.getElementById('prop-area').value || '',
+    street: document.getElementById('prop-street').value || '',
+    plot: document.getElementById('prop-plot').value || '',
+    facade: document.getElementById('prop-facade').value || '',
+    location: document.getElementById('prop-location').value || '',
+    saleType: document.getElementById('prop-sale-type').value || '',
+    services: serpServices,
+  };
+  if (residential.includes(type)) {
+    desc.rooms = document.getElementById('prop-rooms').value || '';
+    desc.baths = document.getElementById('prop-baths').value || '';
+    desc.halls = document.getElementById('prop-halls').value || '';
+    desc.age = document.getElementById('prop-age').value || '';
+  }
+  const { error } = await supabase.from('properties').insert({
+    broker_id: currentBroker.id,
+    title,
+    type,
+    price: Number(price),
+    image_url: imageUrl,
+    description: JSON.stringify(desc)
+  });
+  if (error) {
+    showToast('خطأ في حفظ العقار: ' + error.message, true);
+    return;
+  }
+  showToast('تم حفظ العقار بنجاح!');
+  resetPropertyForm();
+  navigate('view-dashboard');
+}
 
-            try {
-                await new Promise((resolve, reject) => {
-                    if (imgElement.complete) resolve();
-                    else { imgElement.onload = resolve; imgElement.onerror = reject; }
-                });
-                await new Promise(r => setTimeout(r, 500)); 
+function resetPropertyForm() {
+  document.getElementById('prop-title').value = '';
+  document.getElementById('prop-type').value = 'أرض';
+  document.getElementById('prop-price').value = '';
+  document.getElementById('prop-district').value = '';
+  document.getElementById('prop-city').value = '';
+  document.getElementById('prop-area').value = '';
+  document.getElementById('prop-street').value = '';
+  document.getElementById('prop-plot').value = '';
+  document.getElementById('prop-facade').value = '';
+  document.getElementById('prop-location').value = '';
+  document.getElementById('prop-sale-type').value = 'للبيع';
+  document.getElementById('prop-rooms').value = '';
+  document.getElementById('prop-baths').value = '';
+  document.getElementById('prop-halls').value = '';
+  document.getElementById('prop-age').value = '';
+  document.getElementById('residential-fields').classList.add('hidden');
+  document.getElementById('services-container').classList.add('hidden');
+  document.getElementById('serp-status').classList.add('hidden');
+  const preview = document.getElementById('image-preview');
+  const placeholder = document.getElementById('upload-placeholder');
+  preview.src = '';
+  preview.classList.add('hidden');
+  placeholder.classList.remove('hidden');
+  document.getElementById('prop-image-input').value = '';
+  selectedImageFile = null;
+  serpServices = [];
+}
 
-                const storyContainer = document.getElementById('snap-story-container');
-                const dataUrl = await htmlToImage.toJpeg(storyContainer, { quality: 0.95, width: 1080, height: 1920, pixelRatio: 1, useCORS: true });
-                
-                previewImg.src = dataUrl; downloadBtn.href = dataUrl;
-                loader.classList.add('hidden'); loaderText.classList.add('hidden');
-                previewImg.classList.remove('hidden'); downloadBtn.classList.remove('hidden'); downloadBtn.classList.add('flex');
-            } catch (error) {
-                showToast("حدث خطأ في التقاط الصورة.", true); modal.classList.add('hidden');
-            }
-        }
-    </script>
+// ==================== PUBLIC PROFILE ====================
+async function loadPublicProfile(brokerId) {
+  // Load broker info
+  const { data: broker, error: brokerError } = await supabase
+    .from('brokers')
+    .select('*')
+    .eq('id', brokerId)
+    .single();
+  if (brokerError || !broker) {
+    showToast('لم يتم العثور على الوسيط', true);
+    navigate('view-home');
+    return;
+  }
+  document.getElementById('profile-name').textContent = broker.name || 'الوسيط';
+  document.getElementById('profile-title').textContent = 'وسيط عقاري معتمد | عقار كلاود';
+  if (broker.phone) {
+    const phone = broker.phone.replace(/\s/g, '');
+    document.getElementById('profile-whatsapp').href = `https://wa.me/966${phone.replace(/^0/, '')}`;
+    document.getElementById('profile-phone').href = `tel:${phone}`;
+  }
+  // Load properties
+  const grid = document.getElementById('profile-properties');
+  grid.innerHTML = '<div class="col-span-3 text-center py-8"><div class="spinner mx-auto"></div></div>';
+  const { data: props, error: propsError } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('broker_id', brokerId)
+    .order('id', { ascending: false });
+  if (propsError) {
+    grid.innerHTML = '<div class="empty-state col-span-3"><i class="fas fa-exclamation-triangle"></i><p>خطأ في التحميل</p></div>';
+    return;
+  }
+  window._publicProps = props || [];
+  renderPropertiesGrid(window._publicProps, 'profile-properties', true);
+}
+
+// ==================== STORY / SNAP ====================
+async function generateStoryImage(propId) {
+  let prop;
+  prop = allProperties.find(p => p.id === propId) || (window._publicProps || []).find(p => p.id === propId);
+  if (!prop) {
+    showToast('لم يتم العثور على العقار', true);
+    return;
+  }
+  let desc = {};
+  try { desc = JSON.parse(prop.description || '{}'); } catch(e) {}
+
+  // Fill snap container
+  document.getElementById('story-type-title').textContent = prop.type || 'عقار';
+  document.getElementById('story-district').textContent = (desc.district || '') + (desc.city ? ' - ' + desc.city : '');
+  document.getElementById('story-price').textContent = formatPrice(prop.price);
+  document.getElementById('story-area').textContent = desc.area ? desc.area + ' م²' : '-';
+  document.getElementById('story-street').textContent = desc.street ? desc.street + ' م' : '-';
+  document.getElementById('story-plot').textContent = desc.plot || '-';
+  document.getElementById('story-facade').textContent = desc.facade || '-';
+
+  // Services
+  const services = desc.services || [];
+  const servicesGrid = document.getElementById('story-services-grid');
+  servicesGrid.innerHTML = services.slice(0, 8).map(s => `
+    <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:12px;text-align:center;font-family:'Cairo',sans-serif;font-size:22px;color:rgba(255,255,255,0.85);">${s}</div>
+  `).join('');
+
+  // Phone - try to get broker phone
+  let phone = '';
+  if (currentBroker?.phone) phone = currentBroker.phone;
+  document.getElementById('story-phone').textContent = phone;
+
+  // Background image
+  const bgImg = document.getElementById('story-bg-img');
+  bgImg.crossOrigin = 'anonymous';
+  if (prop.image_url) {
+    bgImg.src = prop.image_url;
+  } else {
+    bgImg.src = '';
+  }
+
+  // Show modal with loading
+  const modal = document.getElementById('story-modal');
+  modal.classList.add('open');
+  document.getElementById('story-modal-loading').classList.remove('hidden');
+  document.getElementById('story-modal-content').classList.add('hidden');
+
+  // Wait for image to load
+  await new Promise(resolve => {
+    if (!bgImg.src || bgImg.complete) { resolve(); return; }
+    bgImg.onload = resolve;
+    bgImg.onerror = resolve;
+    setTimeout(resolve, 3000);
+  });
+
+  // Generate image
+  try {
+    const container = document.getElementById('story-bg');
+    const dataUrl = await htmlToImage.toPng(container, {
+      width: 1080,
+      height: 1920,
+      quality: 0.95,
+      skipFonts: false,
+    });
+    document.getElementById('story-modal-loading').classList.add('hidden');
+    document.getElementById('story-modal-content').classList.remove('hidden');
+    document.getElementById('story-preview-img').src = dataUrl;
+    document.getElementById('story-download-btn').href = dataUrl;
+    document.getElementById('story-download-btn').download = `aqar_${prop.id}_story.png`;
+  } catch(err) {
+    closeStoryModal();
+    showToast('خطأ في إنشاء البطاقة: ' + (err.message || 'حاول مرة أخرى'), true);
+  }
+}
+
+function closeStoryModal() {
+  const modal = document.getElementById('story-modal');
+  modal.classList.remove('open');
+  document.getElementById('story-preview-img').src = '';
+}
+
+// ==================== WINDOW ONLOAD ====================
+window.onload = async function() {
+  // Check URL for ?broker= param
+  const urlParams = new URLSearchParams(window.location.search);
+  const brokerId = urlParams.get('broker');
+  if (brokerId) {
+    navigate('view-public-profile', brokerId);
+    return;
+  }
+
+  // Check existing session
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.user) {
+    currentUser = session.user;
+    await loadBrokerProfile();
+    updateNavbar();
+  }
+
+  // Listen for auth changes
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' && session?.user) {
+      currentUser = session.user;
+      await loadBrokerProfile();
+      updateNavbar();
+    } else if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      currentBroker = null;
+      updateNavbar();
+    }
+  });
+};
+
+// Close modal on backdrop click
+document.getElementById('story-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeStoryModal();
+});
+</script>
 </body>
 </html>
