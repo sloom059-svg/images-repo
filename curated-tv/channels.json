@@ -1,6 +1,6 @@
 {
   "version": 1,
   "title": "قنواتي",
-  "showThumbnails": false,
+  "showThumbnails": true,
   "channels": []
 }
