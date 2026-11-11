@@ -1,0 +1,42 @@
+name: Build Curated SmartTube from Official Source
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout customization only
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: smarttube-custom
+      - name: Get official SmartTube source
+        run: |
+          git clone --filter=blob:none --recursive https://github.com/yuliskov/SmartTube.git SmartTube
+          cd SmartTube
+          git checkout 481059fe18f4504e7b8314a682406bf64f1665c0
+          git submodule update --init --recursive
+      - name: Patch home recommendations
+        run: python3 smarttube-custom/patch_smarttube.py
+      - name: Use compatible JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+      - name: Prepare Android SDK
+        run: |
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-33" "build-tools;33.0.2" || true
+      - name: Build original SmartTube APK with curated Home
+        working-directory: SmartTube
+        run: |
+          chmod +x gradlew
+          ./gradlew :smarttubetv:assembleStstableDebug --no-daemon --stacktrace
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SmartTube-Curated-Debug
+          path: SmartTube/smarttubetv/build/outputs/apk/**/*.apk
+          if-no-files-found: error
