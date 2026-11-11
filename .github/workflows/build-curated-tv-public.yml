@@ -1,0 +1,32 @@
+name: Build public Curated TV APK
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'curated-tv-app/**'
+      - '.github/workflows/build-curated-tv-public.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: curated-tv-app
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Assemble APK
+        working-directory: curated-tv-app
+        run: gradle :app:assembleDebug --no-daemon
+      - name: Publish public APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp curated-tv-app/app/build/outputs/apk/debug/app-debug.apk curated-tv-v2.apk
+          gh release create curated-tv-v2 curated-tv-v2.apk --target "${GITHUB_SHA}" --title "قنواتي TV v2" --notes "APK واحد مع مشغل داخلي، يعرض قنوات ملف channels.json. نسخة تجريبية: تشغيل الفيديو يحتاج اختبارًا على جهازك. لا تتطلب تثبيت SmartTube."
