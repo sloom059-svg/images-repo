@@ -1,6 +1,10 @@
 name: Build Curated SmartTube from Official Source
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - 'smarttube-custom/**'
+      - '.github/workflows/build-smarttube-curated.yml'
 jobs:
   build:
     runs-on: ubuntu-latest
