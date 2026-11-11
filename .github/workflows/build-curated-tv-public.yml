@@ -28,5 +28,5 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp curated-tv-app/app/build/outputs/apk/debug/app-debug.apk curated-tv-v2.apk
-          gh release create curated-tv-v2 curated-tv-v2.apk --target "${GITHUB_SHA}" --title "قنواتي TV v2" --notes "APK واحد مع مشغل داخلي، يعرض قنوات ملف channels.json. نسخة تجريبية: تشغيل الفيديو يحتاج اختبارًا على جهازك. لا تتطلب تثبيت SmartTube."
+          cp curated-tv-app/app/build/outputs/apk/debug/app-debug.apk curated-tv-v3.apk
+          gh release create curated-tv-v3 curated-tv-v3.apk --target "${GITHUB_SHA}" --title "قنواتي TV v3" --notes "APK واحد مع بحث يوتيوب عام ومقترحات الرئيسية من قنوات GitHub المختارة فقط، وصور مصغرة طبيعية. تشغيل الفيديو يحتاج اختباراً على شاومي ستيك."
