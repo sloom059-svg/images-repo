@@ -9,6 +9,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.stream.StreamInfo
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
+import org.schabi.newpipe.extractor.search.SearchInfo
 import org.schabi.newpipe.extractor.downloader.Downloader
 import org.schabi.newpipe.extractor.downloader.Request
 import org.schabi.newpipe.extractor.downloader.Response
@@ -37,7 +39,10 @@ class MainActivity : Activity() {
     private lateinit var message: TextView
     private lateinit var heading: TextView
     private lateinit var adapter: BaseAdapter
-    private var thumbnails = false
+    private var thumbnails = true
+    private var searchMode = false
+    private var searchSerial = 0
+    private lateinit var searchInput: EditText
     private var player: ExoPlayer? = null
     private var playerScreen: View? = null
     private var homeScreen: View? = null
@@ -82,13 +87,39 @@ class MainActivity : Activity() {
         val top = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
         heading = text("قنواتي  ●", 29f, accent).apply { layoutDirection = View.LAYOUT_DIRECTION_RTL }
         top.addView(heading, LinearLayout.LayoutParams(0, dp(58), 1f))
+        searchInput = EditText(this).apply {
+            hint = "ابحث في جميع فيديوهات يوتيوب"
+            setSingleLine(true)
+            textSize = 17f
+            setTextColor(Color.WHITE)
+            setHintTextColor(Color.rgb(164, 183, 189))
+            setPadding(dp(14), 0, dp(14), 0)
+            background = rounded(panel)
+            imeOptions = android.view.inputmethod.EditorInfo.IME_ACTION_SEARCH
+            setOnEditorActionListener { _, _, _ -> search(searchInput.text.toString()); true }
+        }
+        top.addView(searchInput, LinearLayout.LayoutParams(0, dp(52), 1.3f).apply { marginEnd = dp(12) })
+        val searchButton = Button(this).apply {
+            text = "بحث"
+            isAllCaps = false
+            textSize = 15f
+            setOnClickListener { search(searchInput.text.toString()) }
+        }
+        top.addView(searchButton, LinearLayout.LayoutParams(dp(95), dp(52)))
+        val homeButton = Button(this).apply {
+            text = "الرئيسية"
+            isAllCaps = false
+            textSize = 15f
+            setOnClickListener { searchSerial++; searchMode = false; searchInput.setText(""); refresh() }
+        }
+        top.addView(homeButton, LinearLayout.LayoutParams(dp(120), dp(52)))
         val refresh = Button(this).apply {
             text = "↻ تحديث"
             textSize = 16f
             isAllCaps = false
             setTextColor(Color.WHITE)
             background = rounded(panel)
-            setOnClickListener { refresh() }
+            setOnClickListener { if (searchMode) search(searchInput.text.toString()) else refresh() }
         }
         top.addView(refresh, LinearLayout.LayoutParams(dp(135), dp(52)))
         root.addView(top)
@@ -145,6 +176,43 @@ class MainActivity : Activity() {
         setContentView(root)
     }
 
+    private fun search(queryRaw: String) {
+        val query = queryRaw.trim()
+        if (query.isEmpty()) {
+            message.text = "اكتب عبارة للبحث"
+            return
+        }
+        searchMode = true
+        val serial = ++searchSerial
+        message.text = "جاري البحث في يوتيوب عن: $query"
+        videos.clear()
+        adapter.notifyDataSetChanged()
+        io.execute {
+            try {
+                val service = NewPipe.getService(0)
+                val handler = service.searchQHFactory.fromQuery(query, emptyList<String>(), "")
+                val results = SearchInfo.getInfo(service, handler)
+                val matches = results.relatedItems.filterIsInstance<StreamInfoItem>().mapNotNull { item ->
+                    val id = Regex("(?:v=|youtu\\.be/|shorts/|live/)([A-Za-z0-9_-]{11})")
+                        .find(item.url)?.groupValues?.get(1)
+                    if (id != null) Video(id, item.name, item.uploaderName ?: "يوتيوب", "") else null
+                }
+                runOnUiThread {
+                    if (isFinishing || serial != searchSerial || !searchMode) return@runOnUiThread
+                    videos.clear()
+                    videos.addAll(matches.distinctBy { it.id }.take(80))
+                    adapter.notifyDataSetChanged()
+                    heading.text = "نتائج البحث"
+                    message.text = if (videos.isEmpty()) "لم يتم العثور على فيديوهات" else "${videos.size} نتيجة بحث من يوتيوب • المقترحات في الرئيسية من قنواتك فقط"
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    if (!isFinishing && serial == searchSerial) message.text = "تعذر البحث في يوتيوب: " + (e.message ?: "خطأ غير معروف")
+                }
+            }
+        }
+    }
+
     private fun fetch(url: String): String {
         val conn = URL(url).openConnection() as HttpURLConnection
         conn.connectTimeout = 9000; conn.readTimeout = 9000
@@ -156,6 +224,8 @@ class MainActivity : Activity() {
         } finally { conn.disconnect() }
     }
     private fun refresh() {
+        searchMode = false
+        val serial = ++searchSerial
         message.text = "جاري تحديث القنوات…"
         io.execute {
             val prefs = getSharedPreferences("offline", MODE_PRIVATE)
@@ -176,7 +246,7 @@ class MainActivity : Activity() {
             }
             val newVideos = mutableListOf<Video>()
             val channels = data.optJSONArray("channels")
-            thumbnails = data.optBoolean("showThumbnails", false)
+            thumbnails = true
             val title = data.optString("title", "قنواتي")
             if (channels != null) {
                 for (n in 0 until channels.length()) {
@@ -191,7 +261,7 @@ class MainActivity : Activity() {
             }
             newVideos.sortByDescending { it.published }
             runOnUiThread {
-                if (isFinishing) return@runOnUiThread
+                if (isFinishing || searchMode || serial != searchSerial) return@runOnUiThread
                 heading.text = "$title  ●"
                 videos.clear(); videos.addAll(newVideos.distinctBy { it.id }.take(120))
                 adapter.notifyDataSetChanged()
