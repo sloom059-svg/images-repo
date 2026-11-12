@@ -114,6 +114,52 @@ source = source.replace('''int selectedSectionIndex = findSectionIndex(mCurrentS
 source = source.replace('''int selectedSectionIndex = findSectionIndex(mCurrentSection != null ? mCurrentSection.getId() : -1);''',
                         '''int selectedSectionIndex = findSectionIndex(MediaGroup.TYPE_HOME);''')
 
+# Suppress all below-player YouTube recommendations; leave normal metadata,
+# captions and the actual SmartTube playback engine untouched.
+suggestions_path = Path("SmartTube/common/src/main/java/com/liskovsoft/smartyoutubetv2/common/app/models/playback/controllers/SuggestionsController.java")
+suggestions_text = suggestions_path.read_text(encoding="utf-8")
+suggestions_needle = '''    private void appendSuggestions(Video video, MediaItemMetadata mediaItemMetadata) {
+        if (video == null || getPlayer() == null) {
+            return;
+        }'''
+assert suggestions_text.count(suggestions_needle) == 1, "SuggestionsController changed upstream"
+suggestions_text = suggestions_text.replace(suggestions_needle,
+    suggestions_needle + '''
+        // YouTube Me: show video only, without recommendations below playback.
+        getPlayer().clearSuggestions();
+        return;''')
+suggestions_path.write_text(suggestions_text, encoding="utf-8")
+
+# Add in-player top-right Back icon. Standard remote BACK stays on SmartTube's
+# native navigation path; tapping this icon invokes exactly the same handler.
+player_path = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/playback/PlaybackActivity.java")
+player = player_path.read_text(encoding="utf-8")
+player_needle = '        setContentView(R.layout.fragment_playback);'
+assert player.count(player_needle) == 1, "Playback activity layout changed"
+player_add = '''
+        android.widget.FrameLayout root = findViewById(android.R.id.content);
+        android.widget.TextView back = new android.widget.TextView(this);
+        back.setText("↩");
+        back.setTextColor(android.graphics.Color.WHITE);
+        back.setTextSize(32);
+        back.setGravity(android.view.Gravity.CENTER);
+        android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+        bg.setColor(0xBB151515);
+        bg.setCornerRadius(getResources().getDisplayMetrics().density * 22);
+        back.setBackground(bg);
+        back.setFocusable(true);
+        back.setContentDescription("العودة للصفحة السابقة");
+        int button = (int) (52 * getResources().getDisplayMetrics().density);
+        int margin = (int) (18 * getResources().getDisplayMetrics().density);
+        android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(
+                button, button, android.view.Gravity.TOP | android.view.Gravity.RIGHT);
+        lp.setMargins(margin, margin, margin, margin);
+        root.addView(back, lp);
+        back.setOnClickListener(v -> onBackPressed());
+'''
+player = player.replace(player_needle,player_needle+player_add,1)
+player_path.write_text(player,encoding="utf-8")
+
 # Give the customized app a different package and visible label so it cannot
 # be confused with (or replace) the official SmartTube installation.
 gradle_path = Path("SmartTube/smarttubetv/build.gradle")
@@ -134,7 +180,7 @@ manifest_path = Path("SmartTube/smarttubetv/src/main/AndroidManifest.xml")
 manifest = manifest_path.read_text(encoding="utf-8")
 label_needle = 'android:label="@string/app_name"'
 assert manifest.count(label_needle) == 2, "Manifest launcher labels changed upstream"
-manifest = manifest.replace(label_needle, 'android:label="قنواتي SmartTube"')
+manifest = manifest.replace(label_needle, 'android:label="YouTube Me"')
 merge_needle = 'tools:replace="android:theme,android:allowBackup"'
 assert manifest.count(merge_needle) == 1, "Main manifest merge config changed"
 manifest = manifest.replace(merge_needle,
