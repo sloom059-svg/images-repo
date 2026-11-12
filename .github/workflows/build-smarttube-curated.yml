@@ -42,15 +42,15 @@ jobs:
         run: |
           src="$(find SmartTube/smarttubetv/build/outputs/apk -type f -name '*_universal.apk' | head -n 1)"
           test -n "$src"
-          cp "$src" SmartTube-Qanawati-v4.apk
-          test -s SmartTube-Qanawati-v4.apk
-          python3 -c 'import zipfile; m=zipfile.ZipFile("SmartTube-Qanawati-v4.apk").read("AndroidManifest.xml"); assert "org.smarttube.curated".encode("utf-16le") in m, "wrong app package"'
+          cp "$src" YouTube-Me-v5.apk
+          test -s YouTube-Me-v5.apk
+          python3 -c 'import zipfile; m=zipfile.ZipFile("YouTube-Me-v5.apk").read("AndroidManifest.xml"); assert "org.smarttube.curated".encode("utf-16le") in m, "wrong app package"'
       - name: Publish one direct APK download (no ZIP)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create smarttube-qanawati-v4 SmartTube-Qanawati-v4.apk \
+          gh release create youtube-me-v5 YouTube-Me-v5.apk \
             -R sloom059-svg/images-repo \
             --target "${GITHUB_SHA}" \
-            --title "قنواتي SmartTube v4 — YouTube-style UI" \
-            --notes "User-provided YouTube-style RTL WebView home, right sidebar, searchable through original SmartTube API, native SmartTube player and local history. Github-curated recommendations; single APK."
+            --title "YouTube Me v5 — SmartTube player and native search autocomplete" \
+            --notes "YouTube Me app with YouTube-style icon and Android TV banner, native SmartTube search suggestions, right sidebar, native player with back arrow and no below-video suggestions. One universal APK."
