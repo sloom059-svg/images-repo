@@ -77,5 +77,22 @@ injected = '''
 
 '''
 source = source.replace(anchor, injected + anchor, 1)
+# Give the customized app a different package and visible label so it cannot
+# be confused with (or replace) the official SmartTube installation.
+gradle_path = Path("SmartTube/smarttubetv/build.gradle")
+gradle = gradle_path.read_text(encoding="utf-8")
+flavor_needle = 'ststable {\n            applicationId "org.smarttube.stable"'
+assert gradle.count(flavor_needle) == 1, "Stable flavor changed upstream"
+gradle = gradle.replace(flavor_needle,
+                        'ststable {\n            applicationId "org.smarttube.curated"')
+gradle_path.write_text(gradle, encoding="utf-8")
+
+manifest_path = Path("SmartTube/smarttubetv/src/main/AndroidManifest.xml")
+manifest = manifest_path.read_text(encoding="utf-8")
+label_needle = 'android:label="@string/app_name"'
+assert manifest.count(label_needle) == 1, "Manifest label changed upstream"
+manifest = manifest.replace(label_needle, 'android:label="قنواتي SmartTube"')
+manifest_path.write_text(manifest, encoding="utf-8")
+
 p.write_text(source, encoding="utf-8")
 print("Patched official SmartTube Home mapping; all other sections and playback untouched.")
