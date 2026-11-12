@@ -96,7 +96,7 @@ section_block = '''    private void initPinnedSections() {
 '''
 old_start = source.index('    private void initPinnedSections() {')
 old_end = source.index('    private void initPinnedCallbacks() {', old_start)
-source = source[:old_start] + section_block + '\\n' + source[old_end:]
+source = source[:old_start] + section_block + '\n' + source[old_end:]
 # The original SmartTube deliberately boots Music for logged-out fresh installs;
 # overriding this is essential or users get arbitrary music recommendations.
 fallback = '''        // Empty Home on first run fix. Switch to something non-empty.
@@ -104,7 +104,7 @@ fallback = '''        // Empty Home on first run fix. Switch to something non-em
             bootSectionId = MediaGroup.TYPE_MUSIC;
         }'''
 assert source.count(fallback) == 1, 'Original forced-music startup logic moved'
-source = source.replace(fallback, '        // Always open the curated home; never boot into Music.\\n        bootSectionId = MediaGroup.TYPE_HOME;')
+source = source.replace(fallback, '        // Always open the curated home; never boot into Music.\n        bootSectionId = MediaGroup.TYPE_HOME;')
 source = source.replace('''        for (BrowseSection section : mErrorSections) {
             getView().addSection(index++, section);
         }''','''        // Do not show network or login error sections as alternative recommendations.''')
