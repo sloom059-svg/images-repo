@@ -125,9 +125,11 @@ suggestions_needle = '''    private void appendSuggestions(Video video, MediaIte
 assert suggestions_text.count(suggestions_needle) == 1, "SuggestionsController changed upstream"
 suggestions_text = suggestions_text.replace(suggestions_needle,
     suggestions_needle + '''
-        // YouTube Me: show video only, without recommendations below playback.
-        getPlayer().clearSuggestions();
-        return;''')
+        // YouTube Me: suppress below-player recommendations, keep metadata.
+        if (getPlayer() != null && video != null) {
+            getPlayer().clearSuggestions();
+            return;
+        }''')
 suggestions_path.write_text(suggestions_text, encoding="utf-8")
 
 # Add in-player top-right Back icon. Standard remote BACK stays on SmartTube's
