@@ -130,6 +130,12 @@ suggestions_text = suggestions_text.replace(suggestions_needle,
             getPlayer().clearSuggestions();
             return;
         }''')
+# Stop metadata requests solely for recommendation rows: these generated
+# loadSuggestions errors and an infinite spinner when YouTube DNS is unavailable.
+request_needle = '        loadMetadata(video, metadata -> updateSuggestions(metadata, video));'
+assert suggestions_text.count(request_needle) == 1, "Suggestions load call changed"
+suggestions_text = suggestions_text.replace(request_needle,
+    '        // YouTube Me disables recommendation row fetching; playback uses its own stream loader.')
 suggestions_path.write_text(suggestions_text, encoding="utf-8")
 
 # Add an in-player Back icon that is visible ONLY while the SmartTube
@@ -145,17 +151,14 @@ player = player.replace(class_needle, class_needle + '''
             mYoutubeMeBack.setVisibility(visible ? android.view.View.VISIBLE : android.view.View.GONE);
         }
     }
+    // Follow SmartTube's original finish lifecycle; the customized Home
+    // now participates in ViewManager through LeanbackActivity.
     private void returnToYoutubeMe() {
-        android.content.Intent intent = new android.content.Intent(this,
-            com.liskovsoft.smartyoutubetv2.tv.ui.main.CuratedActivity.class);
-        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
-            android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        startActivity(intent);
         finishReally();
     }
     @Override
     public void onBackPressed() {
-        returnToYoutubeMe();
+        finishReally();
     }
 ''', 1)
 player_needle = '        setContentView(R.layout.fragment_playback);'
@@ -202,15 +205,7 @@ fragment = fragment.replace(hide_needle, hide_needle + '''
 ''')
 fragment_path.write_text(fragment, encoding="utf-8")
 
-# Prevent the stock SmartTube browse screen from becoming the parent screen when
-# exiting playback (the custom Home is a standalone activity).
-leanback_path = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/common/LeanbackActivity.java")
-leanback = leanback_path.read_text(encoding="utf-8")
-parent_needle = '        getViewManager().startParentView(this);'
-assert leanback.count(parent_needle) == 1
-leanback = leanback.replace(parent_needle,
-    '        if (!(this instanceof PlaybackActivity)) getViewManager().startParentView(this);',1)
-leanback_path.write_text(leanback, encoding="utf-8")
+# Preserve the stock SmartTube player lifecycle and parent-view restoration.
 
 # Give the customized app a different package and visible label so it cannot
 # be confused with (or replace) the official SmartTube installation.
@@ -283,6 +278,34 @@ new_activity = '''        <activity
 
 '''
 manifest = manifest.replace(activity_marker, new_activity + activity_marker, 1)
+# Android search integration handles search text delivered by supported
+# voice assistants. Xiaomi's system microphone routing remains OS-controlled.
+activity_search = '''            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.gms.actions.SEARCH_ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                android:resource="@xml/ytme_searchable" />
+'''
+activity_start = 'android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.CuratedActivity"'
+assert manifest.count(activity_start) == 1, "Curated activity missing"
+manifest = manifest.replace('''            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.CuratedActivity"
+            android:exported="false"''',
+    '''            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.CuratedActivity"
+            android:exported="true"''',1)
+manifest = manifest.replace('''            android:theme="@style/App.Theme.Leanback.Browse" />''',
+    '''            android:theme="@style/App.Theme.Leanback.Browse">
+''' + activity_search + '''        </activity>''',1)
+xml_dir = Path("SmartTube/smarttubetv/src/main/res/xml")
+xml_dir.mkdir(parents=True, exist_ok=True)
+(xml_dir / "ytme_searchable.xml").write_text(
+    """<?xml version="1.0" encoding="utf-8"?>
+<searchable xmlns:android="http://schemas.android.com/apk/res/android"
+  android:label="@string/app_name" android:hint="@string/app_name" />
+""", encoding="utf-8")
 manifest_path.write_text(manifest, encoding="utf-8")
 
 p.write_text(source, encoding="utf-8")
