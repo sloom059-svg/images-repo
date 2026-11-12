@@ -77,6 +77,43 @@ injected = '''
 
 '''
 source = source.replace(anchor, injected + anchor, 1)
+# Curated YouTube-style homepage: exclude SmartTube's Music, Trending, Shorts,
+# News and all its other browsing shelves. Keep Settings accessible.
+# Search is an independent SmartTube action in the top toolbar.
+section_block = '''    private void initPinnedSections() {
+        mSections.clear();
+        BrowseSection home = mSectionsMapping.get(MediaGroup.TYPE_HOME);
+        if (home != null) {
+            home.setEnabled(true);
+            mSections.add(home);
+        }
+        BrowseSection settings = mSectionsMapping.get(MediaGroup.TYPE_SETTINGS);
+        if (settings != null) {
+            settings.setEnabled(true);
+            mSections.add(settings);
+        }
+    }
+'''
+old_start = source.index('    private void initPinnedSections() {')
+old_end = source.index('    private void initPinnedCallbacks() {', old_start)
+source = source[:old_start] + section_block + '\\n' + source[old_end:]
+# The original SmartTube deliberately boots Music for logged-out fresh installs;
+# overriding this is essential or users get arbitrary music recommendations.
+fallback = '''        // Empty Home on first run fix. Switch to something non-empty.
+        if (!getSignInService().isSigned() && VideoStateService.instance(getContext()).isEmpty()) {
+            bootSectionId = MediaGroup.TYPE_MUSIC;
+        }'''
+assert source.count(fallback) == 1, 'Original forced-music startup logic moved'
+source = source.replace(fallback, '        // Always open the curated home; never boot into Music.\\n        bootSectionId = MediaGroup.TYPE_HOME;')
+source = source.replace('''        for (BrowseSection section : mErrorSections) {
+            getView().addSection(index++, section);
+        }''','''        // Do not show network or login error sections as alternative recommendations.''')
+source = source.replace('''int selectedSectionIndex = findSectionIndex(mCurrentSection != null ? mCurrentSection.getId() : mBootstrapSectionId);''',
+                        '''int selectedSectionIndex = findSectionIndex(MediaGroup.TYPE_HOME);''')
+# Prevent a previous session's Music section from being recalled.
+source = source.replace('''int selectedSectionIndex = findSectionIndex(mCurrentSection != null ? mCurrentSection.getId() : -1);''',
+                        '''int selectedSectionIndex = findSectionIndex(MediaGroup.TYPE_HOME);''')
+
 # Give the customized app a different package and visible label so it cannot
 # be confused with (or replace) the official SmartTube installation.
 gradle_path = Path("SmartTube/smarttubetv/build.gradle")
