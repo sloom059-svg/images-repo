@@ -130,12 +130,6 @@ suggestions_text = suggestions_text.replace(suggestions_needle,
             getPlayer().clearSuggestions();
             return;
         }''')
-# Stop metadata requests solely for recommendation rows: these generated
-# loadSuggestions errors and an infinite spinner when YouTube DNS is unavailable.
-request_needle = '        loadMetadata(video, metadata -> updateSuggestions(metadata, video));'
-assert suggestions_text.count(request_needle) == 1, "Suggestions load call changed"
-suggestions_text = suggestions_text.replace(request_needle,
-    '        // YouTube Me disables recommendation row fetching; playback uses its own stream loader.')
 suggestions_path.write_text(suggestions_text, encoding="utf-8")
 
 # Add an in-player Back icon that is visible ONLY while the SmartTube
