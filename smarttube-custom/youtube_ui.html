@@ -399,6 +399,16 @@
       window.appReceive=(message)=>{
         try{const p=typeof message==='string'?JSON.parse(message):message;receive(p.type,p)}catch(e){notice('تعذر عرض البيانات: '+e.message)}
       };
+      window.appVoiceSearch=(text)=>{
+        if(!text)return;
+        searchBox.value=text;
+        doSearch();
+      };
+      const voiceButton=document.querySelector('header button[title="البحث باستخدام الصوت"]');
+      if(voiceButton){
+        voiceButton.style.display='';
+        voiceButton.addEventListener('click',()=>{if(native)native.voice()});
+      }
       headerSearch?.addEventListener('click',doSearch);
       searchBox.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
       const logo=document.querySelector('header a[title="YouTube Home"]');
@@ -429,7 +439,7 @@
       // Remove example-only fake subscriptions and sections from the supplied mockup.
       const subsHeading=[...sidebar.querySelectorAll('h3')].find(e=>e.textContent.trim()==='الاشتراكات');
       if(subsHeading){const container=subsHeading.parentElement;container.querySelectorAll('a').forEach(a=>a.remove());}
-      const demoButtons=[...document.querySelectorAll('header button')].filter(b=>b.title==='إنشاء'||b.title==='الإشعارات'||b.title==='البحث باستخدام الصوت');
+      const demoButtons=[...document.querySelectorAll('header button')].filter(b=>b.title==='إنشاء'||b.title==='الإشعارات');
       demoButtons.forEach(b=>b.style.display='none');
       document.querySelectorAll('header img[src*="placehold"]').forEach(img=>{img.style.display='none'});
       // Keep original YouTube-style header, sidebar, Cairo typography and cards.
