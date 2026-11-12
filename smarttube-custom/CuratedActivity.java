@@ -10,6 +10,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.KeyEvent;
+import android.content.Intent;
+import android.app.SearchManager;
+import android.speech.RecognizerIntent;
+import android.app.Activity;
+import com.liskovsoft.smartyoutubetv2.tv.ui.common.LeanbackActivity;
 import android.view.View;
 import android.widget.Toast;
 import android.text.TextUtils;
@@ -44,7 +49,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * original SmartTube PlaybackPresenter and PlaybackActivity, not a second app.
  * YouTube-wide search uses the original SmartTube ContentService.
  */
-public class CuratedActivity extends MotherActivity {
+public class CuratedActivity extends LeanbackActivity {
+    private static final int REQUEST_VOICE_SEARCH = 8051;
+    private String initialSearch = null;
     private static final String CONFIG_URL =
             "https://raw.githubusercontent.com/sloom059-svg/images-repo/main/curated-tv/channels.json";
     private final ExecutorService io = Executors.newFixedThreadPool(6);
@@ -69,10 +76,59 @@ public class CuratedActivity extends MotherActivity {
         settings.setAllowFileAccess(true);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setDefaultTextEncodingName("UTF-8");
-        web.setWebViewClient(new WebViewClient());
+        web.setWebViewClient(new WebViewClient() {
+            @Override public void onPageFinished(WebView view, String url) {
+                if (initialSearch != null) {
+                    String query = initialSearch;
+                    initialSearch = null;
+                    startSearchInHome(query);
+                }
+            }
+        });
         web.addJavascriptInterface(new Bridge(), "NativeBridge");
         setContentView(web);
+        String q = getIntent() != null ? getIntent().getStringExtra(SearchManager.QUERY) : null;
+        if (TextUtils.isEmpty(q) && getIntent() != null)
+            q = getIntent().getStringExtra("query");
+        if (!TextUtils.isEmpty(q)) initialSearch = q;
         web.loadUrl("file:///android_asset/curated_home.html");
+    }
+
+    private void startSearchInHome(String query) {
+        if (TextUtils.isEmpty(query)) return;
+        String js = "window.appVoiceSearch(" + JSONObject.quote(query) + ");";
+        runOnUiThread(() -> { if (web != null && !isFinishing()) web.evaluateJavascript(js, null); });
+    }
+
+    private void startVoiceSearch() {
+        try {
+            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA");
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "ابحث في YouTube Me");
+            startActivityForResult(intent, REQUEST_VOICE_SEARCH);
+        } catch (Exception e) {
+            Toast.makeText(this, "التعرف الصوتي غير متاح على هذا الجهاز. استخدم كتابة البحث.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_VOICE_SEARCH && resultCode == Activity.RESULT_OK && data != null) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (matches != null && !matches.isEmpty()) startSearchInHome(matches.get(0));
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        String q = intent.getStringExtra(SearchManager.QUERY);
+        if (TextUtils.isEmpty(q)) q = intent.getStringExtra("query");
+        if (!TextUtils.isEmpty(q)) startSearchInHome(q);
     }
 
     private ContentService service() {
@@ -325,6 +381,7 @@ public class CuratedActivity extends MotherActivity {
 
     private class Bridge {
         @JavascriptInterface public void home() { loadHome(); }
+        @JavascriptInterface public void voice() { runOnUiThread(() -> startVoiceSearch()); }
         @JavascriptInterface public void search(String query) { performSearch(query); }
         @JavascriptInterface public void suggest(String query) { performSuggest(query); }
         @JavascriptInterface public void history() { showHistory(); }
