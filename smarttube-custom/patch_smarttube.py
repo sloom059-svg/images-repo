@@ -132,35 +132,85 @@ suggestions_text = suggestions_text.replace(suggestions_needle,
         }''')
 suggestions_path.write_text(suggestions_text, encoding="utf-8")
 
-# Add in-player top-right Back icon. Standard remote BACK stays on SmartTube's
-# native navigation path; tapping this icon invokes exactly the same handler.
+# Add an in-player Back icon that is visible ONLY while the SmartTube
+# playback controls are showing. Remote BACK uses the same direct home path.
 player_path = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/playback/PlaybackActivity.java")
 player = player_path.read_text(encoding="utf-8")
+class_needle = '    private PlaybackFragment mPlaybackFragment;'
+assert player.count(class_needle) == 1, "Playback activity field layout changed"
+player = player.replace(class_needle, class_needle + '''
+    private android.widget.TextView mYoutubeMeBack;
+    public void setYoutubeMeBackVisible(boolean visible) {
+        if (mYoutubeMeBack != null) {
+            mYoutubeMeBack.setVisibility(visible ? android.view.View.VISIBLE : android.view.View.GONE);
+        }
+    }
+    private void returnToYoutubeMe() {
+        android.content.Intent intent = new android.content.Intent(this,
+            com.liskovsoft.smartyoutubetv2.tv.ui.main.CuratedActivity.class);
+        intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+            android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        finishReally();
+    }
+    @Override
+    public void onBackPressed() {
+        returnToYoutubeMe();
+    }
+''', 1)
 player_needle = '        setContentView(R.layout.fragment_playback);'
 assert player.count(player_needle) == 1, "Playback activity layout changed"
 player_add = '''
         android.widget.FrameLayout root = findViewById(android.R.id.content);
-        android.widget.TextView back = new android.widget.TextView(this);
-        back.setText("↩");
-        back.setTextColor(android.graphics.Color.WHITE);
-        back.setTextSize(32);
-        back.setGravity(android.view.Gravity.CENTER);
+        mYoutubeMeBack = new android.widget.TextView(this);
+        mYoutubeMeBack.setText("←");
+        mYoutubeMeBack.setTextColor(android.graphics.Color.WHITE);
+        mYoutubeMeBack.setTextSize(29);
+        mYoutubeMeBack.setGravity(android.view.Gravity.CENTER);
         android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
-        bg.setColor(0xBB151515);
-        bg.setCornerRadius(getResources().getDisplayMetrics().density * 22);
-        back.setBackground(bg);
-        back.setFocusable(true);
-        back.setContentDescription("العودة للصفحة السابقة");
-        int button = (int) (52 * getResources().getDisplayMetrics().density);
+        bg.setColor(0xC0212121);
+        bg.setCornerRadius(getResources().getDisplayMetrics().density * 32);
+        mYoutubeMeBack.setBackground(bg);
+        mYoutubeMeBack.setFocusable(true);
+        mYoutubeMeBack.setContentDescription("العودة للرئيسية");
+        int button = (int) (44 * getResources().getDisplayMetrics().density);
         int margin = (int) (18 * getResources().getDisplayMetrics().density);
         android.widget.FrameLayout.LayoutParams lp = new android.widget.FrameLayout.LayoutParams(
-                button, button, android.view.Gravity.TOP | android.view.Gravity.RIGHT);
+            button, button, android.view.Gravity.TOP | android.view.Gravity.RIGHT);
         lp.setMargins(margin, margin, margin, margin);
-        root.addView(back, lp);
-        back.setOnClickListener(v -> onBackPressed());
+        root.addView(mYoutubeMeBack, lp);
+        mYoutubeMeBack.setVisibility(android.view.View.GONE);
+        mYoutubeMeBack.setOnClickListener(v -> returnToYoutubeMe());
 '''
-player = player.replace(player_needle,player_needle+player_add,1)
-player_path.write_text(player,encoding="utf-8")
+player = player.replace(player_needle, player_needle + player_add, 1)
+player_path.write_text(player, encoding="utf-8")
+
+fragment_path = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/playback/PlaybackFragment.java")
+fragment = fragment_path.read_text(encoding="utf-8")
+show_needle = '        super.showControlsOverlay(mIsUIAnimationsEnabled);'
+hide_needle = '        super.hideControlsOverlay(mIsUIAnimationsEnabled);'
+assert fragment.count(show_needle) == 1 and fragment.count(hide_needle) == 1
+fragment = fragment.replace(show_needle, show_needle + '''
+        if (getActivity() instanceof PlaybackActivity) {
+            ((PlaybackActivity) getActivity()).setYoutubeMeBackVisible(true);
+        }
+''')
+fragment = fragment.replace(hide_needle, hide_needle + '''
+        if (getActivity() instanceof PlaybackActivity) {
+            ((PlaybackActivity) getActivity()).setYoutubeMeBackVisible(false);
+        }
+''')
+fragment_path.write_text(fragment, encoding="utf-8")
+
+# Prevent the stock SmartTube browse screen from becoming the parent screen when
+# exiting playback (the custom Home is a standalone activity).
+leanback_path = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/common/LeanbackActivity.java")
+leanback = leanback_path.read_text(encoding="utf-8")
+parent_needle = '        getViewManager().startParentView(this);'
+assert leanback.count(parent_needle) == 1
+leanback = leanback.replace(parent_needle,
+    '        if (!(this instanceof PlaybackActivity)) getViewManager().startParentView(this);',1)
+leanback_path.write_text(leanback, encoding="utf-8")
 
 # Give the customized app a different package and visible label so it cannot
 # be confused with (or replace) the official SmartTube installation.
