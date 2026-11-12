@@ -1,15 +1,11 @@
 {
-  "version": 2,
+  "version": 3,
   "title": "قنواتي",
   "showThumbnails": true,
   "channels": [
     {
       "name": "أصحاب مازن",
       "channelId": "UCayyBWtI1PxJCtieqKUQZnA"
-    },
-    {
-      "name": "إخوان مازن",
-      "channelId": "UC2WICOkyzFBUjzofCDDdbsw"
     },
     {
       "name": "سعود وإخوانه - قناة سعود",
