@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قنواتي — YouTube</title>
+    
+    <!-- Google Fonts: Cairo for Arabic support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        yt: {
+                            bg: '#0f0f0f',
+                            header: '#0f0f0f',
+                            hover: '#272727',
+                            border: '#3f3f3f',
+                            text: '#f1f1f1',
+                            subtext: '#aaaaaa',
+                            blue: '#3ea6ff',
+                            search: '#121212',
+                            searchBorder: '#303030'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar for a polished look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #717171;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a0a0a0;
+        }
+
+        /* Hide scrollbar for category chips but keep functionality */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-yt-bg text-yt-text font-sans h-screen flex flex-col overflow-hidden">
+
+    <!-- Header / Navbar -->
+    <header class="h-14 flex items-center justify-between px-4 bg-yt-header sticky top-0 z-50">
+        <!-- Right side (Menu & Logo) -->
+        <div class="flex items-center gap-4">
+            <button id="menu-btn" class="p-2 hover:bg-yt-hover rounded-full transition-colors">
+                <i class="ph ph-list text-2xl"></i>
+            </button>
+            <a href="#" class="flex items-center gap-1" title="YouTube Home">
+                <div class="bg-red-600 text-white rounded-lg px-1 py-0.5 flex items-center justify-center">
+                    <i class="ph-fill ph-youtube-logo text-2xl"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tighter">YouTube</span>
+                <span class="text-xs text-yt-subtext mb-3 ml-1">AR</span>
+            </a>
+        </div>
+
+        <!-- Center (Search) -->
+        <div class="hidden md:flex items-center flex-1 max-w-2xl ml-8 mr-12">
+            <div class="flex flex-1 items-center bg-yt-search border border-yt-searchBorder rounded-r-full overflow-hidden focus-within:border-blue-500 focus-within:ml-0 transition-colors">
+                <!-- Search icon inside input when focused (simulated) -->
+                <div class="pl-4 pr-3 hidden focus-within:block text-yt-subtext">
+                    <i class="ph ph-magnifying-glass"></i>
+                </div>
+                <input type="text" placeholder="بحث" class="w-full bg-transparent text-yt-text px-4 py-2 outline-none placeholder-yt-subtext text-lg">
+            </div>
+            <button class="bg-yt-hover border border-r-0 border-yt-searchBorder px-5 py-2 rounded-l-full hover:bg-[#303030] transition-colors" title="بحث">
+                <i class="ph ph-magnifying-glass text-xl"></i>
+            </button>
+            <button class="mr-4 p-2.5 bg-yt-hover hover:bg-[#303030] rounded-full transition-colors" title="البحث باستخدام الصوت">
+                <i class="ph-fill ph-microphone text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Left side (Icons & Profile) -->
+        <div class="flex items-center gap-2 sm:gap-4">
+            <button class="md:hidden p-2 hover:bg-yt-hover rounded-full transition-colors">
+                <i class="ph ph-magnifying-glass text-2xl"></i>
+            </button>
+            <button class="hidden sm:block p-2 hover:bg-yt-hover rounded-full transition-colors" title="إنشاء">
+                <i class="ph ph-video-camera text-2xl"></i>
+            </button>
+            <button class="hidden sm:block p-2 hover:bg-yt-hover rounded-full transition-colors relative" title="الإشعارات">
+                <i class="ph ph-bell text-2xl"></i>
+                <span class="absolute top-1.5 right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full border-2 border-yt-header">9+</span>
+            </button>
+            <button class="p-1">
+                <img src="https://placehold.co/32x32/8b5cf6/ffffff?text=U" alt="User Profile" class="w-8 h-8 rounded-full object-cover">
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Sidebar (Right Menu) -->
+        <aside id="sidebar" class="w-60 bg-yt-bg h-full overflow-y-auto hidden md:flex flex-col transition-all duration-300 hover:scrollbar-thumb-gray-500">
+            <div class="py-2 border-b border-yt-border">
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 bg-yt-hover rounded-lg font-medium">
+                    <i class="ph-fill ph-house text-xl"></i>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-lightning text-xl"></i>
+                    <span>Shorts</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-monitor-play text-xl"></i>
+                    <span>الاشتراكات</span>
+                </a>
+            </div>
+            
+            <div class="py-2 border-b border-yt-border">
+                <div class="px-5 py-2 text-lg font-bold flex items-center gap-2 hover:bg-yt-hover mx-2 rounded-lg cursor-pointer">
+                    أنت <i class="ph ph-caret-left text-sm"></i>
+                </div>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-clock-counter-clockwise text-xl"></i>
+                    <span>السجل</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-playlist text-xl"></i>
+                    <span>قوائم التشغيل</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-video text-xl"></i>
+                    <span>فيديوهاتك</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-clock text-xl"></i>
+                    <span>المشاهدة لاحقاً</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-thumbs-up text-xl"></i>
+                    <span>فيديوهات أعجبتني</span>
+                </a>
+            </div>
+            
+            <div class="py-2 border-b border-yt-border">
+                <h3 class="px-5 py-2 text-base font-bold">الاشتراكات</h3>
+                <!-- Dynamic subscriptions can go here, simulated below -->
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <img src="https://placehold.co/24x24/ef4444/ffffff?text=G" class="rounded-full w-6 h-6">
+                    <span class="truncate">قناة الألعاب</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <img src="https://placehold.co/24x24/3b82f6/ffffff?text=T" class="rounded-full w-6 h-6">
+                    <span class="truncate">التقنية اليوم</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <img src="https://placehold.co/24x24/10b981/ffffff?text=C" class="rounded-full w-6 h-6">
+                    <span class="truncate">مطبخ العائلة</span>
+                </a>
+            </div>
+            
+            <div class="py-2">
+                <h3 class="px-5 py-2 text-base font-bold">استكشاف</h3>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-fire text-xl"></i>
+                    <span>المحتوى الرائج</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-music-note text-xl"></i>
+                    <span>موسيقى</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
+                    <i class="ph ph-game-controller text-xl"></i>
+                    <span>ألعاب فيديو</span>
+                </a>
+            </div>
+            
+            <div class="px-5 py-4 text-xs text-yt-subtext flex flex-wrap gap-1 leading-relaxed border-t border-yt-border">
+                <a href="#" class="hover:text-yt-text">المعلومات</a>
+                <a href="#" class="hover:text-yt-text">الصحافة</a>
+                <a href="#" class="hover:text-yt-text">حقوق الطبع والنشر</a>
+                <a href="#" class="hover:text-yt-text">التواصل معنا</a>
+                <a href="#" class="hover:text-yt-text">صناع المحتوى</a>
+                <br>
+                <p class="mt-4 text-[#717171]">© 2026 Google LLC</p>
+            </div>
+        </aside>
+
+        <!-- Mini Sidebar for small screens (Optional behavior) -->
+        <aside id="mini-sidebar" class="w-[72px] bg-yt-bg h-full overflow-y-auto hidden flex-col items-center py-2">
+             <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
+                <i class="ph-fill ph-house text-2xl"></i>
+                <span class="text-[10px]">الرئيسية</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
+                <i class="ph ph-lightning text-2xl"></i>
+                <span class="text-[10px]">Shorts</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
+                <i class="ph ph-monitor-play text-2xl"></i>
+                <span class="text-[10px]">الاشتراكات</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
+                <i class="ph ph-play-circle text-2xl"></i>
+                <span class="text-[10px]">أنت</span>
+            </a>
+        </aside>
+
+        <!-- Main Video Feed Area -->
+        <main class="flex-1 bg-yt-bg overflow-y-auto relative h-full flex flex-col">
+            
+            <!-- Category Chips -->
+            <div class="sticky top-0 bg-yt-bg/95 backdrop-blur-sm z-40 px-4 py-3 flex items-center gap-3 overflow-x-auto hide-scrollbar border-b border-transparent">
+                <button class="bg-white text-black px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">الكل</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">موسيقى</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">ألعاب فيديو</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">مباشر</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">بودكاست</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">برمجة</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">تطوير الويب</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">ذكاء اصطناعي</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">كرة القدم</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">أخبار</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">طبخ</button>
+                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">الجديد لك</button>
+            </div>
+
+            <!-- Videos Grid -->
+            <div id="video-grid" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-10">
+                <!-- Videos will be injected here via JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript for functionality -->
+    <script>
+      const grid=document.getElementById('video-grid');
+      const chips=document.querySelector('main > div:first-child');
+      const searchBox=document.querySelector('header input[type=text]');
+      const headerSearch=document.querySelector('header button[title="بحث"]');
+      const sidebar=document.getElementById('sidebar');
+      const miniSidebar=document.getElementById('mini-sidebar');
+      const menuBtn=document.getElementById('menu-btn');
+      let selection="all", channels=[], allVideos=[], currentMode="home", currentQuery="";
+      const safe = v => String(v || "").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const native=window.NativeBridge || null;
+      const notice=(t)=>{grid.innerHTML='<div class="col-span-full text-yt-subtext text-xl py-16 text-center">'+safe(t)+'</div>'};
+      function changeActive(menu){
+        sidebar.querySelectorAll('a').forEach(a=>a.classList.remove('bg-yt-hover'));
+        sidebar.querySelectorAll('a').forEach(a=>{if(a.textContent.trim()===menu)a.classList.add('bg-yt-hover')});
+      }
+      function showChips(){
+        if(currentMode!=="home"){chips.classList.add('hidden');return}
+        chips.classList.remove('hidden');
+        let arr=[{id:'all',name:'الكل'},...channels.map(c=>({id:c.channelId,name:c.name}))];
+        chips.innerHTML=arr.map(c=>'<button data-channel="'+safe(c.id)+'" class="'+(selection===c.id?'bg-white text-black':'bg-yt-hover text-yt-text')+' px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap focus:ring-2 focus:ring-white">'+safe(c.name)+'</button>').join('');
+        chips.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{selection=b.dataset.channel;showChips();render()}));
+      }
+      function itemCard(v){
+        const img=v.thumbnail || 'https://i.ytimg.com/vi/'+encodeURIComponent(v.id)+'/hqdefault.jpg';
+        const id=safe(v.id),title=safe(v.title),channel=safe(v.channel);
+        return '<div data-video="'+id+'" tabindex="0" role="button" class="flex flex-col gap-3 cursor-pointer group rounded-xl focus:outline-none focus:ring-2 focus:ring-white" aria-label="'+title+'">'
+        +'<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-[#202020]"><img src="'+safe(img)+'" alt="'+title+'" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src=\'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg\'">'
+        +(v.duration?'<span class="absolute bottom-1.5 left-1.5 bg-black/80 text-xs px-1.5 py-0.5 rounded">'+safe(v.duration)+'</span>':'')+'</div>'
+        +'<div class="flex gap-3 pr-2"><div class="w-9 h-9 rounded-full bg-red-600 text-white font-bold flex items-center justify-center">'+safe((v.channel||'ي')[0])+'</div>'
+        +'<div class="flex flex-col overflow-hidden"><h3 class="text-sm font-semibold text-yt-text line-clamp-2 leading-tight">'+title+'</h3>'
+        +'<div class="text-xs text-yt-subtext mt-1.5">'+channel+'</div></div></div></div>';
+      }
+      function render(){
+        const cards=selection==='all'?allVideos:allVideos.filter(x=>x.channelId===selection);
+        if(!cards.length){notice(currentMode==='home'?'لا توجد مقاطع لهذه القناة حاليًا. تأكد من معرف القناة في GitHub.':'لا توجد فيديوهات.');return}
+        grid.innerHTML=cards.map(itemCard).join('');
+        grid.querySelectorAll('[data-video]').forEach(el=>{
+          const play=()=>{const video=cards.find(v=>v.id===el.dataset.video); if(video&&native)native.play(video.id,video.title,video.channel,video.thumbnail||'');};
+          el.addEventListener('click',play);
+          el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play();}});
+        });
+      }
+      function goHome(){
+        currentMode='home';selection='all';currentQuery='';searchBox.value='';
+        changeActive('الصفحة الرئيسية');showChips();notice('جاري تحميل فيديوهات قنواتك المختارة...');
+        if(native) native.home();
+      }
+      function doSearch(){
+        const q=searchBox.value.trim();
+        if(!q)return;
+        currentMode='search';currentQuery=q;
+        chips.classList.add('hidden');changeActive('');
+        notice('جاري البحث في يوتيوب عن: '+q);
+        if(native)native.search(q);
+      }
+      function showHistory(){
+        currentMode='history';chips.classList.add('hidden');changeActive('السجل');
+        notice('جاري عرض سجل المشاهدة...');
+        if(native) native.history();
+      }
+      function showSubs(){
+        currentMode='subscriptions';selection='all';
+        chips.classList.add('hidden');changeActive('الاشتراكات');
+        notice('هذه قنواتك المختارة في GitHub.');
+        const markup=channels.map(c=>'<button class="rounded-xl bg-yt-hover p-5 text-right focus:ring-2 focus:ring-white" data-id="'+safe(c.channelId)+'">'+safe(c.name)+'</button>').join('');
+        grid.innerHTML=markup||'<p class="text-yt-subtext">لم تضف قنوات بعد</p>';
+        grid.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{goHome();selection=b.dataset.id;showChips();render()}));
+      }
+      function receive(type,data){
+        if(type==='home'){
+          channels=data.channels||[];allVideos=data.videos||[];
+          const errors=data.errors||[];
+          if(currentMode!=='home')return;
+          showChips();
+          if(allVideos.length)render();
+          else notice(errors.length?'تعذر تحميل فيديوهات القنوات. '+errors.join(' • '):'لا توجد فيديوهات بعد، تحقق من ملف القنوات.');
+          const subs=sidebar.querySelector('h3');
+        }else if(type==='search'){
+          if(currentMode!=='search'||data.query!==currentQuery)return;
+          allVideos=data.videos||[];selection='all';render();
+          if(data.error)notice(data.error);
+        }else if(type==='history'){
+          if(currentMode!=='history')return;
+          allVideos=data.videos||[];selection='all';render();
+          if(!allVideos.length)notice('سجل المشاهدة فارغ. ستظهر هنا المقاطع التي تشغلها من هذا التطبيق.');
+        }
+      }
+      window.appReceive=(message)=>{
+        try{const p=typeof message==='string'?JSON.parse(message):message;receive(p.type,p)}catch(e){notice('تعذر عرض البيانات: '+e.message)}
+      };
+      headerSearch?.addEventListener('click',doSearch);
+      searchBox.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
+      const logo=document.querySelector('header a[title="YouTube Home"]');
+      logo?.addEventListener('click',e=>{e.preventDefault();goHome()});
+      function bindMenu(a){
+        const name=a.textContent.trim();
+        if(name.includes('الصفحة الرئيسية')||name==='الرئيسية') return ()=>goHome();
+        if(name==='السجل')return ()=>showHistory();
+        if(name==='الاشتراكات')return ()=>showSubs();
+        if(name==='المشاهدة لاحقاً')return ()=>notice('ميزة المشاهدة لاحقًا لم تُربط بعد.');
+        return ()=>notice('هذا القسم غير متاح في النسخة المخصصة حاليًا. استخدم الرئيسية أو البحث أو السجل.');
+      }
+      sidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();bindMenu(a)()}));
+      miniSidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();bindMenu(a)()}));
+      let expanded=true;
+      menuBtn.addEventListener('click',()=>{
+        if(innerWidth>=768){
+          expanded=!expanded;
+          sidebar.classList.toggle('hidden',!expanded);
+          miniSidebar.classList.toggle('hidden',expanded);
+          miniSidebar.classList.toggle('flex',!expanded);
+        }else{
+          sidebar.classList.toggle('hidden');
+          sidebar.classList.toggle('absolute');
+          sidebar.classList.toggle('z-50');
+        }
+      });
+      // Remove example-only fake subscriptions and sections from the supplied mockup.
+      const subsHeading=[...sidebar.querySelectorAll('h3')].find(e=>e.textContent.trim()==='الاشتراكات');
+      if(subsHeading){const container=subsHeading.parentElement;container.querySelectorAll('a').forEach(a=>a.remove());}
+      const demoButtons=[...document.querySelectorAll('header button')].filter(b=>b.title==='إنشاء'||b.title==='الإشعارات'||b.title==='البحث باستخدام الصوت');
+      demoButtons.forEach(b=>b.style.display='none');
+      document.querySelectorAll('header img[src*="placehold"]').forEach(img=>{img.style.display='none'});
+      // Keep original YouTube-style header, sidebar, Cairo typography and cards.
+      goHome();
+    </script>
+</body>
+</html>
