@@ -141,5 +141,42 @@ manifest = manifest.replace(merge_needle,
                             'tools:replace="android:theme,android:allowBackup,android:label"')
 manifest_path.write_text(manifest, encoding="utf-8")
 
+# Install the user's YouTube-like HTML and bind it to native SmartTube playback.
+assets_dir = Path("SmartTube/smarttubetv/src/main/assets")
+assets_dir.mkdir(parents=True, exist_ok=True)
+(assets_dir / "curated_home.html").write_bytes(
+    Path("smarttube-custom/youtube_ui.html").read_bytes())
+java_dir = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/main")
+(java_dir / "CuratedActivity.java").write_bytes(
+    Path("smarttube-custom/CuratedActivity.java").read_bytes())
+
+# On normal launcher start, open the user's WebView interface, not original
+# SmartTube browse. Keep all YouTube deep-link handling in original Splash.
+splash_path = java_dir / "SplashActivity.java"
+splash = splash_path.read_text(encoding="utf-8")
+start_marker = "        super.onCreate(savedInstanceState);"
+assert splash.count(start_marker) == 1, "SmartTube splash changed"
+splash = splash.replace(start_marker, start_marker + '''
+        if (getIntent() != null && Intent.ACTION_MAIN.equals(getIntent().getAction())) {
+            startActivity(new Intent(this, CuratedActivity.class));
+            finish();
+            return;
+        }''')
+splash = splash.replace('        mPresenter.onViewDestroyed();',
+                        '        if (mPresenter != null) mPresenter.onViewDestroyed();')
+splash_path.write_text(splash, encoding="utf-8")
+
+activity_marker = '        <activity\\n            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity"'
+assert manifest.count(activity_marker) == 1, "Splash manifest entry changed"
+new_activity = '''        <activity
+            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.CuratedActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:theme="@style/App.Theme.Leanback.Browse" />
+
+'''
+manifest = manifest.replace(activity_marker, new_activity + activity_marker, 1)
+manifest_path.write_text(manifest, encoding="utf-8")
+
 p.write_text(source, encoding="utf-8")
 print("Patched official SmartTube Home mapping; all other sections and playback untouched.")
