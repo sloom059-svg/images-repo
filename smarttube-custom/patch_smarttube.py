@@ -185,6 +185,15 @@ merge_needle = 'tools:replace="android:theme,android:allowBackup"'
 assert manifest.count(merge_needle) == 1, "Main manifest merge config changed"
 manifest = manifest.replace(merge_needle,
                             'tools:replace="android:theme,android:allowBackup,android:label"')
+# Override Android TV icon/banner for launchers choosing either resource.
+drawable = Path("SmartTube/smarttubetv/src/main/res/drawable")
+(drawable / "ytme_icon.xml").write_bytes(Path("smarttube-custom/ytme_icon.xml").read_bytes())
+(drawable / "ytme_banner.xml").write_bytes(Path("smarttube-custom/ytme_banner.xml").read_bytes())
+manifest = manifest.replace('android:banner="@mipmap/app_banner"', 'android:banner="@drawable/ytme_banner"')
+manifest = manifest.replace('android:logo="@mipmap/app_logo"', 'android:logo="@drawable/ytme_icon"')
+manifest = manifest.replace('android:icon="@mipmap/app_icon"', 'android:icon="@drawable/ytme_icon"')
+# Preserve launcher-alias icon/banner on devices that use it.
+manifest = manifest.replace('android:icon="@mipmap/app_icon_alt"', 'android:icon="@drawable/ytme_icon"')
 manifest_path.write_text(manifest, encoding="utf-8")
 
 # Install the user's YouTube-like HTML and bind it to native SmartTube playback.
