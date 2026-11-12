@@ -114,6 +114,21 @@ public class CuratedActivity extends LeanbackActivity {
     }
 
     @Override
+    public boolean onSearchRequested() {
+        startVoiceSearch();
+        return true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_SEARCH) {
+            startVoiceSearch();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_VOICE_SEARCH && resultCode == Activity.RESULT_OK && data != null) {
