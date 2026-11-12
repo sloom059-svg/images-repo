@@ -2,5 +2,34 @@
   "version": 1,
   "title": "قنواتي",
   "showThumbnails": true,
-  "channels": []
+  "channels": [
+    {
+      "name": "أصحاب مازن",
+      "channelId": "UCayyBWtI1PxJCtieqKUQZnA"
+    },
+    {
+      "name": "إخوان مازن",
+      "channelId": "UC2WICOkyzFBUjzofCDDdbsw"
+    },
+    {
+      "name": "سعود وإخوانه - قناة سعود",
+      "channelId": "UC7loSNYw43oSTLlThtm_Ytw"
+    },
+    {
+      "name": "سعود وإخوانه - Saud Brothers",
+      "channelId": "UCVXFRM2jUeYyrp2Y9laB8WA"
+    },
+    {
+      "name": "beIN SPORTS - ملخصات ومحتوى رياضي",
+      "channelId": "UCJUCcJUeh0Cz2xyKwkw5Q1w"
+    },
+    {
+      "name": "السنافر بالعربية - القناة الرسمية",
+      "channelId": "UCBZLg-ixSGqEjh3ld7nSwLg"
+    },
+    {
+      "name": "أوكتونوتس بالعربية",
+      "channelId": "UCXGCkE7vRMkwQwLVHJPd8fQ"
+    }
+  ]
 }
