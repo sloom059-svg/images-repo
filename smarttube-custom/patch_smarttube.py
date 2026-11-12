@@ -90,7 +90,7 @@ gradle_path.write_text(gradle, encoding="utf-8")
 manifest_path = Path("SmartTube/smarttubetv/src/main/AndroidManifest.xml")
 manifest = manifest_path.read_text(encoding="utf-8")
 label_needle = 'android:label="@string/app_name"'
-assert manifest.count(label_needle) == 1, "Manifest label changed upstream"
+assert manifest.count(label_needle) == 2, "Manifest launcher labels changed upstream"
 manifest = manifest.replace(label_needle, 'android:label="قنواتي SmartTube"')
 manifest_path.write_text(manifest, encoding="utf-8")
 
