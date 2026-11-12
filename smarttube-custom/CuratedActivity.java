@@ -241,6 +241,32 @@ public class CuratedActivity extends MotherActivity {
         });
     }
 
+    private void performSuggest(String query) {
+        if (TextUtils.isEmpty(query) || query.trim().length() == 0) return;
+        String q = query.trim();
+        io.execute(() -> {
+            JSONArray suggestions = new JSONArray();
+            try {
+                List<String> terms = service().getSearchTagsObserve(q)
+                        .timeout(9, TimeUnit.SECONDS).blockingFirst();
+                int max = Math.min(terms.size(), 9);
+                for (int i = 0; i < max; i++) {
+                    String term = terms.get(i);
+                    if (!TextUtils.isEmpty(term)) suggestions.put(term);
+                }
+            } catch (Exception ignored) {
+                // SmartTube search autocomplete endpoint may be temporarily unavailable.
+            }
+            try {
+                JSONObject payload = new JSONObject();
+                payload.put("type", "suggest");
+                payload.put("query", q);
+                payload.put("suggestions", suggestions);
+                send(payload);
+            } catch (Exception ignored) {}
+        });
+    }
+
     private void performSearch(String query) {
         if (TextUtils.isEmpty(query)) return;
         int ticket = generation.incrementAndGet();
@@ -300,6 +326,7 @@ public class CuratedActivity extends MotherActivity {
     private class Bridge {
         @JavascriptInterface public void home() { loadHome(); }
         @JavascriptInterface public void search(String query) { performSearch(query); }
+        @JavascriptInterface public void suggest(String query) { performSuggest(query); }
         @JavascriptInterface public void history() { showHistory(); }
         @JavascriptInterface public void play(String id, String title, String channel, String thumb) {
             playVideo(id, title, channel, thumb);
