@@ -166,7 +166,7 @@ splash = splash.replace('        mPresenter.onViewDestroyed();',
                         '        if (mPresenter != null) mPresenter.onViewDestroyed();')
 splash_path.write_text(splash, encoding="utf-8")
 
-activity_marker = '        <activity\\n            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity"'
+activity_marker = '        <activity\n            android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.SplashActivity"'
 assert manifest.count(activity_marker) == 1, "Splash manifest entry changed"
 new_activity = '''        <activity
             android:name="com.liskovsoft.smartyoutubetv2.tv.ui.main.CuratedActivity"
