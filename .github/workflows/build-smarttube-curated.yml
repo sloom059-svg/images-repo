@@ -44,7 +44,7 @@ jobs:
           test -n "$src"
           cp "$src" SmartTube-Qanawati-v3.apk
           test -s SmartTube-Qanawati-v3.apk
-          aapt dump badging SmartTube-Qanawati-v3.apk | grep "package: name='org.smarttube.curated'"
+          python3 -c 'import zipfile; m=zipfile.ZipFile("SmartTube-Qanawati-v3.apk").read("AndroidManifest.xml"); assert "org.smarttube.curated".encode("utf-16le") in m, "wrong app package"'
       - name: Publish one direct APK download (no ZIP)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
