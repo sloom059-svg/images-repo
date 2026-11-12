@@ -98,6 +98,10 @@ manifest = manifest_path.read_text(encoding="utf-8")
 label_needle = 'android:label="@string/app_name"'
 assert manifest.count(label_needle) == 2, "Manifest launcher labels changed upstream"
 manifest = manifest.replace(label_needle, 'android:label="قنواتي SmartTube"')
+merge_needle = 'tools:replace="android:theme,android:allowBackup"'
+assert manifest.count(merge_needle) == 1, "Main manifest merge config changed"
+manifest = manifest.replace(merge_needle,
+                            'tools:replace="android:theme,android:allowBackup,android:label"')
 manifest_path.write_text(manifest, encoding="utf-8")
 
 p.write_text(source, encoding="utf-8")
