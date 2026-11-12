@@ -16,18 +16,19 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p bundle
-          gh run download 43123564489 -R sloom059-svg/images-repo -n SmartTube-Curated-Debug -D bundle
+          gh run download 43136639171 -R sloom059-svg/images-repo -n SmartTube-Curated-Debug -D bundle
           echo "APK files:"
           find bundle -type f -name '*.apk' -print
           test "$(find bundle -type f -name '*.apk' | wc -l)" -ge 1
-          apk="$(find bundle -type f -name '*ststable*debug*.apk' | head -1)"
-          if [ -z "$apk" ]; then apk="$(find bundle -type f -name '*.apk' | head -1)"; fi
-          cp "$apk" SmartTube-Curated-v1.apk
-          test -s SmartTube-Curated-v1.apk
+          apk="$(find bundle -type f -name '*_universal.apk' | head -1)"
+          test -n "$apk"
+          cp "$apk" SmartTube-Qanawati-v3.apk
+          test -s SmartTube-Qanawati-v3.apk
+          python3 -c 'import zipfile; m=zipfile.ZipFile("SmartTube-Qanawati-v3.apk").read("AndroidManifest.xml"); assert "org.smarttube.curated".encode("utf-16le") in m'
       - name: Publish public direct download
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create smarttube-curated-v1 SmartTube-Curated-v1.apk -R sloom059-svg/images-repo \
-            --title "SmartTube Curated v1 - Official SmartTube source customized" \
-            --notes "Built from the original open-source yuliskov/SmartTube code (MIT). Home videos are sourced only from channel IDs set in curated-tv/channels.json. Original search, player and thumbnails are retained. This independently built modification is not an official SmartTube release. On-device testing is recommended."
+          gh release create smarttube-qanawati-v3 SmartTube-Qanawati-v3.apk -R sloom059-svg/images-repo \
+            --title "قنواتي SmartTube v3 - One APK" \
+            --notes "Built from the original open-source yuliskov/SmartTube code (MIT). Home launches only selected channel videos from curated-tv/channels.json; Music/Trending and random browse sections removed. Original search, player and thumbnails are retained. This independently built modification is not an official SmartTube release. On-device testing is recommended."
