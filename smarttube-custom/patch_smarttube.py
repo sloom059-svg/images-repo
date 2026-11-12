@@ -85,6 +85,12 @@ flavor_needle = 'ststable {\n            applicationId "org.smarttube.stable"'
 assert gradle.count(flavor_needle) == 1, "Stable flavor changed upstream"
 gradle = gradle.replace(flavor_needle,
                         'ststable {\n            applicationId "org.smarttube.curated"')
+# The original Google Services JSON only has the official package IDs. Do not
+# reuse official Firebase credentials for the customized package.
+firebase_needle = 'if (new File("${projectDir}/google-services.json").exists() &&'
+assert gradle.count(firebase_needle) == 1, "Google Services configuration changed upstream"
+gradle = gradle.replace(firebase_needle,
+                        'if (false && new File("${projectDir}/google-services.json").exists() &&')
 gradle_path.write_text(gradle, encoding="utf-8")
 
 manifest_path = Path("SmartTube/smarttubetv/src/main/AndroidManifest.xml")
