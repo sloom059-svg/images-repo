@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "title": "قنواتي",
   "showThumbnails": true,
   "channels": [
@@ -30,6 +30,10 @@
     {
       "name": "أوكتونوتس بالعربية",
       "channelId": "UCXGCkE7vRMkwQwLVHJPd8fQ"
+    },
+    {
+      "channelId": "UCs-_3T-UfmhBZSy1p844MEw",
+      "name": "Nur"
     }
   ]
 }
