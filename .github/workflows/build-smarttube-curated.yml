@@ -42,15 +42,15 @@ jobs:
         run: |
           src="$(find SmartTube/smarttubetv/build/outputs/apk -type f -name '*_universal.apk' | head -n 1)"
           test -n "$src"
-          cp "$src" YouTube-Me-v7.apk
-          test -s YouTube-Me-v7.apk
-          python3 -c 'import zipfile; m=zipfile.ZipFile("YouTube-Me-v7.apk").read("AndroidManifest.xml"); assert "org.smarttube.curated".encode("utf-16le") in m, "wrong app package"'
+          cp "$src" YouTube-Me-v8.apk
+          test -s YouTube-Me-v8.apk
+          python3 -c 'import zipfile; m=zipfile.ZipFile("YouTube-Me-v8.apk").read("AndroidManifest.xml"); assert "org.smarttube.curated".encode("utf-16le") in m, "wrong app package"'
       - name: Publish one direct APK download (no ZIP)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create youtube-me-v7 YouTube-Me-v7.apk \
+          gh release create youtube-me-v8 YouTube-Me-v8.apk \
             -R sloom059-svg/images-repo \
             --target "${GITHUB_SHA}" \
-            --title "YouTube Me v7 — SmartTube player and native search autocomplete" \
+            --title "YouTube Me v8 — SmartTube player and native search autocomplete" \
             --notes "YouTube Me app with YouTube-style icon and Android TV banner, native SmartTube search suggestions, right sidebar, native player with back arrow and no below-video suggestions. One universal APK. Player arrow appears only with playback controls; remote back returns to YouTube Me; icon/banner corrected."
