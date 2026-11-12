@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 55
     permissions:
-      contents: read
+      contents: write
     steps:
       - name: Checkout customization only
         uses: actions/checkout@v4
@@ -38,9 +38,19 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew :smarttubetv:assembleStstableDebug --no-daemon --stacktrace
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: SmartTube-Curated-Debug
-          path: SmartTube/smarttubetv/build/outputs/apk/**/*.apk
-          if-no-files-found: error
+      - name: Keep exactly one universal APK
+        run: |
+          src="$(find SmartTube/smarttubetv/build/outputs/apk -type f -name '*_universal.apk' | head -n 1)"
+          test -n "$src"
+          cp "$src" SmartTube-Qanawati-v3.apk
+          test -s SmartTube-Qanawati-v3.apk
+          aapt dump badging SmartTube-Qanawati-v3.apk | grep "package: name='org.smarttube.curated'"
+      - name: Publish one direct APK download (no ZIP)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create smarttube-qanawati-v3 SmartTube-Qanawati-v3.apk \
+            -R sloom059-svg/images-repo \
+            --target "${GITHUB_SHA}" \
+            --title "قنواتي SmartTube v3" \
+            --notes "Separate app: curated home from channels.json, original SmartTube search and playback, native thumbnails. Experimental, device testing required. One universal APK."
