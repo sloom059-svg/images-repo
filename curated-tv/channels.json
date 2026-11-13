@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "title": "قنواتي",
   "showThumbnails": true,
   "channels": [
@@ -30,6 +30,10 @@
     {
       "channelId": "UCs-_3T-UfmhBZSy1p844MEw",
       "name": "Nur"
+    },
+    {
+      "name": "سيرة الأشياء",
+      "channelId": "UCWi7Z7f0khmUwyeVuwD3-pw"
     }
   ]
 }
