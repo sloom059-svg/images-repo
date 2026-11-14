@@ -1,0 +1,56 @@
+name: Build Nibras Remote APK
+on:
+  push:
+    paths:
+      - 'nibras-remote/**'
+      - '.github/workflows/build-nibras-remote.yml'
+  workflow_dispatch:
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout customized remote
+        uses: actions/checkout@v4
+      - name: Checkout open-source Webmote (MIT)
+        run: git clone --depth 1 https://github.com/maxhayim/webmote.git upstream
+      - name: Apply approved Arabic interface
+        run: |
+          cp nibras-remote/index.html upstream/app/src/main/assets/index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('upstream/app/src/main/res/values/strings.xml')
+          if p.exists():
+              s=p.read_text()
+              s=s.replace('Webmote', 'Nibras Remote')
+              p.write_text(s)
+          # Custom variant must not auto-update itself to upstream uncustomized APK.
+          for p in Path('upstream/app/src/main/java').rglob('*.java'):
+              s=p.read_text()
+              # Do not alter runtime code; update behavior can be set to Off in TV UI.
+          PY
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK 34
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
+      - name: Build signed debug-key APK for installation
+        working-directory: upstream
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease
+      - name: Rename APK
+        run: |
+          mkdir -p output
+          cp upstream/app/build/outputs/apk/release/*.apk output/Nibras-Remote.apk
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nibras-Remote-APK
+          path: output/Nibras-Remote.apk
+          if-no-files-found: error
