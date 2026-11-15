@@ -6,6 +6,10 @@ on:
       - 'nibras-remote/**'
       - '.github/workflows/build-nibras-remote.yml'
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'nibras-remote/**'
+      - '.github/workflows/build-nibras-remote.yml'
 
 permissions:
   contents: read
