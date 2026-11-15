@@ -42,11 +42,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Configure Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install Android build platform
-        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-34" "build-tools;34.0.0" || sdkmanager --install "platforms;android-34" "build-tools;34.0.0"
 
       - name: Build release APK
         working-directory: upstream
