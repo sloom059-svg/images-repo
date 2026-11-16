@@ -1,453 +1,199 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Me</title>
-    
-    <!-- Google Fonts: Cairo for Arabic support -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        yt: {
-                            bg: '#0f0f0f',
-                            header: '#0f0f0f',
-                            hover: '#272727',
-                            border: '#3f3f3f',
-                            text: '#f1f1f1',
-                            subtext: '#aaaaaa',
-                            blue: '#3ea6ff',
-                            search: '#121212',
-                            searchBorder: '#303030'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Cairo', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        /* Custom Scrollbar for a polished look */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #717171;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a0a0a0;
-        }
-
-        /* Hide scrollbar for category chips but keep functionality */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>YouTube Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0a0a0b;--panel:#151517;--line:rgba(255,255,255,.075);--muted:#9ca0aa;--red:#e50914}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 56% -25%,#252427 0,#0a0a0b 66%);color:#f7f7f9;font:500 15px Cairo,Arial,sans-serif;overflow:hidden}
+button,input{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}button:focus-visible,a:focus-visible,[tabindex="0"]:focus-visible{outline:3px solid #fff!important;outline-offset:3px;box-shadow:0 0 0 5px rgba(229,9,20,.34)!important}
+.top{height:76px;display:flex;align-items:center;gap:22px;padding:0 26px;background:rgba(20,20,22,.88);border-bottom:1px solid var(--line);position:relative;z-index:30;backdrop-filter:blur(16px)}
+.brand-area{display:flex;align-items:center;gap:12px;min-width:228px}.menu{width:43px;height:43px;display:grid;place-items:center;border:0;background:transparent;color:#dedee4;border-radius:13px;font-size:26px}.menu:hover,.nav-link:hover{background:#28282b}
+.logo{display:flex;align-items:center;gap:11px;white-space:nowrap;font-size:22px;font-weight:800;letter-spacing:-.5px}
+.play-logo{display:grid;place-items:center;background:var(--red);height:37px;width:43px;border-radius:12px;box-shadow:0 0 19px #e5091447;font-size:19px;color:#fff}.logo small{font-size:11px;color:#b7b7c0;font-weight:600}
+.search-area{flex:1;max-width:740px;margin-inline:auto;position:relative;display:flex;align-items:center;gap:10px}
+.search-shell{display:flex;align-items:center;gap:12px;flex:1;border-radius:50px;border:1px solid #3b3b40;background:#19191b;min-width:0;padding:0 20px;transition:border-color .18s}
+.search-shell:focus-within{border-color:var(--red);box-shadow:0 0 0 2px #e5091426}.search-icon{font-size:24px;color:#85858f}
+#search{width:100%;min-width:0;height:47px;background:transparent;border:none;outline:none;color:#fff;font-size:15px}#search::placeholder{color:#81818d}
+.voice,.search-go{width:47px;height:47px;border-radius:50%;border:1px solid #353539;color:#f8f8fa;background:#28282c;display:grid;place-items:center;font-size:23px;flex-shrink:0}.voice:hover,.search-go:hover{background:#38383d}
+#autocomplete{position:absolute;top:calc(100% + 10px);right:0;left:0;background:#242428;border:1px solid #424249;border-radius:15px;box-shadow:0 15px 35px #000c;padding:8px;display:none;z-index:50;max-height:310px;overflow:auto}
+.suggestion{display:block;width:100%;padding:11px 16px;border:0;border-radius:9px;background:transparent;text-align:right;color:white}.suggestion:hover,.suggestion:focus{background:#3a3a40}
+.top-badge{color:#96969e;font-size:12px;white-space:nowrap;border:1px solid #303035;padding:8px 13px;border-radius:30px}
+.layout{height:calc(100dvh - 76px);display:flex;overflow:hidden}
+.sidebar{width:238px;flex:none;border-left:1px solid var(--line);background:rgba(20,20,22,.48);padding:23px 12px;overflow-y:auto;transition:width .16s}
+.sidebar.compact{width:77px}.sidebar.compact .nav-text,.sidebar.compact .nav-caption{display:none}.sidebar.compact .nav-link{justify-content:center}
+.nav-caption{color:#777781;font-size:11px;margin:18px 15px 9px}.nav-link{height:54px;padding:0 16px;border-radius:13px;display:flex;align-items:center;gap:18px;color:#c3c3ca;font-weight:700;margin-bottom:8px;font-size:14px;border:0;background:transparent;width:100%;text-align:right}
+.nav-link .ico{font-size:23px;width:28px;line-height:1}.nav-link.active{color:#fff;background:linear-gradient(90deg,#272022,#322123);border-right:3px solid var(--red)}.nav-link.active .ico{color:#ff4751}
+.content{flex:1;min-width:0;height:100%;overflow-y:auto;overscroll-behavior:contain;padding:25px clamp(15px,2.6vw,40px) 55px}
+.heading{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:18px}.heading h1{margin:0;font-size:24px;font-weight:800}.heading p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.count{color:#b3b3bc;font-size:12px;border:1px solid #303035;padding:6px 12px;border-radius:20px;white-space:nowrap}
+#chips{display:flex;gap:10px;overflow-x:auto;padding:6px 4px 14px;scrollbar-width:none;min-height:57px}#chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;background:#242427;border:1px solid #36363b;color:#eee;padding:8px 16px;border-radius:10px;font-weight:700;font-size:13px;white-space:nowrap}.chip.selected{background:#fff;color:#111;border-color:#fff}.chip:hover{border-color:#8d8d95}
+#grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:26px 17px;margin-top:10px}.card{min-width:0;cursor:pointer;border:1px solid transparent;background:#1414169c;border-radius:16px;padding:9px;transition:border-color .15s,background .15s}.card:hover,.card:focus{background:#202024;border-color:#58585e}.poster{width:100%;aspect-ratio:16/9;background:#222;border-radius:12px;overflow:hidden;position:relative}.poster img{display:block;width:100%;height:100%;object-fit:cover}.duration{position:absolute;left:8px;bottom:8px;background:#080808d9;color:#fff;padding:1px 6px;font:700 11px Arial;border-radius:4px}
+.card-meta{display:flex;gap:11px;margin:11px 2px 3px}.avatar{width:36px;height:36px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,#de1520,#7c0b14);display:grid;place-items:center;font-weight:800}.meta{min-width:0}.card-title{font-size:13px;line-height:1.65;font-weight:800;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.channel-name{font-size:11px;color:var(--muted);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.notice{grid-column:1/-1;text-align:center;padding:55px 20px;color:#aaa;font-size:15px}.empty-icon{font-size:32px;display:block;margin-bottom:10px}
+@media(max-width:1200px){#grid{grid-template-columns:repeat(3,minmax(0,1fr))}.top-badge{display:none}}
+@media(max-width:900px){.sidebar{width:74px}.sidebar .nav-text,.sidebar .nav-caption{display:none}.sidebar .nav-link{justify-content:center}.brand-area{min-width:auto}.logo small{display:none}#grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:570px){.top{height:68px;padding:0 10px;gap:8px}.layout{height:calc(100dvh - 68px)}.logo strong{display:none}.brand-area{gap:4px}.search-shell{padding:0 8px}#search{font-size:12px;height:42px}.voice,.search-go{height:40px;width:40px}.sidebar{display:none}.sidebar.open{display:block;position:absolute;z-index:25;right:0;top:68px;bottom:0;width:200px;background:#171719}.sidebar.open .nav-text,.sidebar.open .nav-caption{display:block}.content{padding:17px 12px}#grid{gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}.heading h1{font-size:19px}.card{padding:5px}.avatar{display:none}}
+</style>
 </head>
-<body class="bg-yt-bg text-yt-text font-sans h-screen flex flex-col overflow-hidden">
-
-    <!-- Header / Navbar -->
-    <header class="h-14 flex items-center justify-between px-4 bg-yt-header sticky top-0 z-50">
-        <!-- Right side (Menu & Logo) -->
-        <div class="flex items-center gap-4">
-            <button id="menu-btn" class="p-2 hover:bg-yt-hover rounded-full transition-colors">
-                <i class="ph ph-list text-2xl"></i>
-            </button>
-            <a href="#" class="flex items-center gap-1" title="YouTube Home">
-                <div class="bg-red-600 text-white rounded-lg px-1 py-0.5 flex items-center justify-center">
-                    <i class="ph-fill ph-youtube-logo text-2xl"></i>
-                </div>
-                <span class="font-bold text-xl tracking-tighter">YouTube</span>
-                <span class="text-xs text-yt-subtext mb-3 ml-1">AR</span>
-            </a>
-        </div>
-
-        <!-- Center (Search) -->
-        <div class="hidden md:flex items-center flex-1 max-w-2xl ml-8 mr-12">
-            <div class="flex flex-1 items-center bg-yt-search border border-yt-searchBorder rounded-r-full overflow-hidden focus-within:border-blue-500 focus-within:ml-0 transition-colors">
-                <!-- Search icon inside input when focused (simulated) -->
-                <div class="pl-4 pr-3 hidden focus-within:block text-yt-subtext">
-                    <i class="ph ph-magnifying-glass"></i>
-                </div>
-                <input type="text" placeholder="بحث" class="w-full bg-transparent text-yt-text px-4 py-2 outline-none placeholder-yt-subtext text-lg">
-            </div>
-            <button class="bg-yt-hover border border-r-0 border-yt-searchBorder px-5 py-2 rounded-l-full hover:bg-[#303030] transition-colors" title="بحث">
-                <i class="ph ph-magnifying-glass text-xl"></i>
-            </button>
-            <button class="mr-4 p-2.5 bg-yt-hover hover:bg-[#303030] rounded-full transition-colors" title="البحث باستخدام الصوت">
-                <i class="ph-fill ph-microphone text-xl"></i>
-            </button>
-        </div>
-
-        <!-- Left side (Icons & Profile) -->
-        <div class="flex items-center gap-2 sm:gap-4">
-            <button class="md:hidden p-2 hover:bg-yt-hover rounded-full transition-colors">
-                <i class="ph ph-magnifying-glass text-2xl"></i>
-            </button>
-            <button class="hidden sm:block p-2 hover:bg-yt-hover rounded-full transition-colors" title="إنشاء">
-                <i class="ph ph-video-camera text-2xl"></i>
-            </button>
-            <button class="hidden sm:block p-2 hover:bg-yt-hover rounded-full transition-colors relative" title="الإشعارات">
-                <i class="ph ph-bell text-2xl"></i>
-                <span class="absolute top-1.5 right-1.5 bg-red-600 text-white text-[10px] font-bold px-1 rounded-full border-2 border-yt-header">9+</span>
-            </button>
-            <button class="p-1">
-                <img src="https://placehold.co/32x32/8b5cf6/ffffff?text=U" alt="User Profile" class="w-8 h-8 rounded-full object-cover">
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Content Area -->
-    <div class="flex flex-1 overflow-hidden">
-        
-        <!-- Sidebar (Right Menu) -->
-        <aside id="sidebar" class="w-60 bg-yt-bg h-full overflow-y-auto hidden md:flex flex-col transition-all duration-300 hover:scrollbar-thumb-gray-500">
-            <div class="py-2 border-b border-yt-border">
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 bg-yt-hover rounded-lg font-medium">
-                    <i class="ph-fill ph-house text-xl"></i>
-                    <span>الصفحة الرئيسية</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-lightning text-xl"></i>
-                    <span>Shorts</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-monitor-play text-xl"></i>
-                    <span>الاشتراكات</span>
-                </a>
-            </div>
-            
-            <div class="py-2 border-b border-yt-border">
-                <div class="px-5 py-2 text-lg font-bold flex items-center gap-2 hover:bg-yt-hover mx-2 rounded-lg cursor-pointer">
-                    أنت <i class="ph ph-caret-left text-sm"></i>
-                </div>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-clock-counter-clockwise text-xl"></i>
-                    <span>السجل</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-playlist text-xl"></i>
-                    <span>قوائم التشغيل</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-video text-xl"></i>
-                    <span>فيديوهاتك</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-clock text-xl"></i>
-                    <span>المشاهدة لاحقاً</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-thumbs-up text-xl"></i>
-                    <span>فيديوهات أعجبتني</span>
-                </a>
-            </div>
-            
-            <div class="py-2 border-b border-yt-border">
-                <h3 class="px-5 py-2 text-base font-bold">الاشتراكات</h3>
-                <!-- Dynamic subscriptions can go here, simulated below -->
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <img src="https://placehold.co/24x24/ef4444/ffffff?text=G" class="rounded-full w-6 h-6">
-                    <span class="truncate">قناة الألعاب</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <img src="https://placehold.co/24x24/3b82f6/ffffff?text=T" class="rounded-full w-6 h-6">
-                    <span class="truncate">التقنية اليوم</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <img src="https://placehold.co/24x24/10b981/ffffff?text=C" class="rounded-full w-6 h-6">
-                    <span class="truncate">مطبخ العائلة</span>
-                </a>
-            </div>
-            
-            <div class="py-2">
-                <h3 class="px-5 py-2 text-base font-bold">استكشاف</h3>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-fire text-xl"></i>
-                    <span>المحتوى الرائج</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-music-note text-xl"></i>
-                    <span>موسيقى</span>
-                </a>
-                <a href="#" class="flex items-center gap-4 px-3 py-2 mx-2 hover:bg-yt-hover rounded-lg font-medium transition-colors">
-                    <i class="ph ph-game-controller text-xl"></i>
-                    <span>ألعاب فيديو</span>
-                </a>
-            </div>
-            
-            <div class="px-5 py-4 text-xs text-yt-subtext flex flex-wrap gap-1 leading-relaxed border-t border-yt-border">
-                <a href="#" class="hover:text-yt-text">المعلومات</a>
-                <a href="#" class="hover:text-yt-text">الصحافة</a>
-                <a href="#" class="hover:text-yt-text">حقوق الطبع والنشر</a>
-                <a href="#" class="hover:text-yt-text">التواصل معنا</a>
-                <a href="#" class="hover:text-yt-text">صناع المحتوى</a>
-                <br>
-                <p class="mt-4 text-[#717171]">© 2026 Google LLC</p>
-            </div>
-        </aside>
-
-        <!-- Mini Sidebar for small screens (Optional behavior) -->
-        <aside id="mini-sidebar" class="w-[72px] bg-yt-bg h-full overflow-y-auto hidden flex-col items-center py-2">
-             <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
-                <i class="ph-fill ph-house text-2xl"></i>
-                <span class="text-[10px]">الرئيسية</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
-                <i class="ph ph-lightning text-2xl"></i>
-                <span class="text-[10px]">Shorts</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
-                <i class="ph ph-monitor-play text-2xl"></i>
-                <span class="text-[10px]">الاشتراكات</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 p-4 hover:bg-yt-hover rounded-lg w-16 mb-1">
-                <i class="ph ph-play-circle text-2xl"></i>
-                <span class="text-[10px]">أنت</span>
-            </a>
-        </aside>
-
-        <!-- Main Video Feed Area -->
-        <main class="flex-1 bg-yt-bg overflow-y-auto relative h-full flex flex-col">
-            
-            <!-- Category Chips -->
-            <div class="sticky top-0 bg-yt-bg/95 backdrop-blur-sm z-40 px-4 py-3 flex items-center gap-3 overflow-x-auto hide-scrollbar border-b border-transparent">
-                <button class="bg-white text-black px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">الكل</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">موسيقى</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">ألعاب فيديو</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">مباشر</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">بودكاست</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">برمجة</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">تطوير الويب</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">ذكاء اصطناعي</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">كرة القدم</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">أخبار</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">طبخ</button>
-                <button class="bg-yt-hover hover:bg-[#3f3f3f] transition-colors px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap">الجديد لك</button>
-            </div>
-
-            <!-- Videos Grid -->
-            <div id="video-grid" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-4 gap-y-10">
-                <!-- Videos will be injected here via JS -->
-            </div>
-        </main>
-    </div>
-
-    <!-- JavaScript for functionality -->
-    <script>
-      const grid=document.getElementById('video-grid');
-      const chips=document.querySelector('main > div:first-child');
-      const searchBox=document.querySelector('header input[type=text]');
-      const headerSearch=document.querySelector('header button[title="بحث"]');
-      const searchWrap=searchBox.parentElement.parentElement;
-      searchWrap.style.position='relative';
-      searchBox.parentElement.classList.remove('overflow-hidden');
-      const dropdown=document.createElement('div');
-      dropdown.id='youtube-autocomplete';
-      dropdown.dir='rtl';
-      dropdown.style.cssText='position:absolute;top:100%;right:0;width:100%;z-index:9999;background:#242424;color:white;border-radius:0 0 16px 16px;box-shadow:0 10px 24px #000b;max-height:340px;overflow-y:auto;display:none;padding:6px 0';
-      searchWrap.appendChild(dropdown);
-      let suggestionTimer=null;
-      function closeSuggestions(){dropdown.style.display='none';dropdown.innerHTML=''}
-      function renderSuggestions(terms){
-        dropdown.innerHTML='';
-        terms.slice(0,9).forEach(term=>{
-          const choice=document.createElement('button');
-          choice.type='button';choice.className='flex w-full items-center gap-3 px-5 py-2 text-right hover:bg-[#383838] focus:bg-[#383838] focus:outline-none';
-          choice.innerHTML='<span class="text-gray-400">⌕</span><span class="flex-1">'+safe(term)+'</span>';
-          choice.addEventListener('click',()=>{searchBox.value=term;closeSuggestions();doSearch()});
-          dropdown.appendChild(choice);
-        });
-        dropdown.style.display=terms.length?'block':'none';
-      }
-      searchBox.addEventListener('input',()=>{
-        const q=searchBox.value.trim();
-        clearTimeout(suggestionTimer);
-        closeSuggestions();
-        if(!q)return;
-        suggestionTimer=setTimeout(()=>{if(native)native.suggest(q)},230);
-      });
-      searchBox.addEventListener('keydown',e=>{
-        if(e.key==='Escape'){closeSuggestions();return}
-        if(e.key==='ArrowDown'){
-          const firstSuggestion=dropdown.style.display!=='none' ? dropdown.querySelector('button') : null;
-          const firstVideo=grid.querySelector('[data-video]');
-          const firstChannel=chips.querySelector('button');
-          const target=firstSuggestion || firstVideo || firstChannel;
-          if(target){e.preventDefault();target.focus();}
-        }
-      });
-      dropdown.addEventListener('keydown',e=>{
-        const choices=[...dropdown.querySelectorAll('button')],idx=choices.indexOf(document.activeElement);
-        if(e.key==='ArrowDown'){e.preventDefault();choices[Math.min(idx+1,choices.length-1)]?.focus()}
-        if(e.key==='ArrowUp'){e.preventDefault();if(idx<=0)searchBox.focus();else choices[idx-1]?.focus()}
-        if(e.key==='Escape'){closeSuggestions();searchBox.focus()}
-      });
-      const sidebar=document.getElementById('sidebar');
-      const miniSidebar=document.getElementById('mini-sidebar');
-      const menuBtn=document.getElementById('menu-btn');
-      let selection="all", channels=[], allVideos=[], currentMode="home", currentQuery="";
-      const safe = v => String(v || "").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-      const native=window.NativeBridge || null;
-      const notice=(t)=>{grid.innerHTML='<div class="col-span-full text-yt-subtext text-xl py-16 text-center">'+safe(t)+'</div>'};
-      function changeActive(menu){
-        sidebar.querySelectorAll('a').forEach(a=>a.classList.remove('bg-yt-hover'));
-        sidebar.querySelectorAll('a').forEach(a=>{if(a.textContent.trim()===menu)a.classList.add('bg-yt-hover')});
-      }
-      function showChips(){
-        if(currentMode!=="home"){chips.classList.add('hidden');return}
-        chips.classList.remove('hidden');
-        let arr=[{id:'all',name:'الكل'},...channels.map(c=>({id:c.channelId,name:c.name}))];
-        chips.innerHTML=arr.map(c=>'<button data-channel="'+safe(c.id)+'" class="'+(selection===c.id?'bg-white text-black':'bg-yt-hover text-yt-text')+' px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap focus:ring-2 focus:ring-white">'+safe(c.name)+'</button>').join('');
-        chips.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{selection=b.dataset.channel;showChips();render()}));
-      }
-      function itemCard(v){
-        const img=v.thumbnail || 'https://i.ytimg.com/vi/'+encodeURIComponent(v.id)+'/hqdefault.jpg';
-        const id=safe(v.id),title=safe(v.title),channel=safe(v.channel);
-        return '<div data-video="'+id+'" tabindex="0" role="button" class="flex flex-col gap-3 cursor-pointer group rounded-xl focus:outline-none focus:ring-2 focus:ring-white" aria-label="'+title+'">'
-        +'<div class="relative w-full aspect-video rounded-xl overflow-hidden bg-[#202020]"><img src="'+safe(img)+'" alt="'+title+'" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src=\'https://i.ytimg.com/vi/'+id+'/hqdefault.jpg\'">'
-        +(v.duration?'<span class="absolute bottom-1.5 left-1.5 bg-black/80 text-xs px-1.5 py-0.5 rounded">'+safe(v.duration)+'</span>':'')+'</div>'
-        +'<div class="flex gap-3 pr-2"><div class="w-9 h-9 rounded-full bg-red-600 text-white font-bold flex items-center justify-center">'+safe((v.channel||'ي')[0])+'</div>'
-        +'<div class="flex flex-col overflow-hidden"><h3 class="text-sm font-semibold text-yt-text line-clamp-2 leading-tight">'+title+'</h3>'
-        +'<div class="text-xs text-yt-subtext mt-1.5">'+channel+'</div></div></div></div>';
-      }
-      function render(){
-        const cards=selection==='all'?allVideos:allVideos.filter(x=>x.channelId===selection);
-        if(!cards.length){notice(currentMode==='home'?'لا توجد مقاطع لهذه القناة حاليًا. تأكد من معرف القناة في GitHub.':'لا توجد فيديوهات.');return}
-        grid.innerHTML=cards.map(itemCard).join('');
-        grid.querySelectorAll('[data-video]').forEach(el=>{
-          const play=()=>{const video=cards.find(v=>v.id===el.dataset.video); if(video&&native)native.play(video.id,video.title,video.channel,video.thumbnail||'');};
-          el.addEventListener('click',play);
-          el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play();}});
-        });
-      }
-      function goHome(){
-        closeSuggestions();
-        currentMode='home';selection='all';currentQuery='';searchBox.value='';
-        changeActive('الصفحة الرئيسية');showChips();notice('جاري تحميل فيديوهات قنواتك المختارة...');
-        if(native) native.home();
-      }
-      function doSearch(){
-        closeSuggestions();
-        const q=searchBox.value.trim();
-        if(!q)return;
-        currentMode='search';currentQuery=q;
-        chips.classList.add('hidden');changeActive('');
-        notice('جاري البحث في يوتيوب عن: '+q);
-        if(native)native.search(q);
-      }
-      function showHistory(){
-        currentMode='history';chips.classList.add('hidden');changeActive('السجل');
-        notice('جاري عرض سجل المشاهدة...');
-        if(native) native.history();
-      }
-      function showSubs(){
-        currentMode='subscriptions';selection='all';
-        chips.classList.add('hidden');changeActive('الاشتراكات');
-        notice('هذه قنواتك المختارة في GitHub.');
-        const markup=channels.map(c=>'<button class="rounded-xl bg-yt-hover p-5 text-right focus:ring-2 focus:ring-white" data-id="'+safe(c.channelId)+'">'+safe(c.name)+'</button>').join('');
-        grid.innerHTML=markup||'<p class="text-yt-subtext">لم تضف قنوات بعد</p>';
-        grid.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{goHome();selection=b.dataset.id;showChips();render()}));
-      }
-      function receive(type,data){
-        if(type==='home'){
-          channels=data.channels||[];allVideos=data.videos||[];
-          const errors=data.errors||[];
-          if(currentMode!=='home')return;
-          showChips();
-          if(allVideos.length)render();
-          else notice(errors.length?'تعذر تحميل فيديوهات القنوات. '+errors.join(' • '):'لا توجد فيديوهات بعد، تحقق من ملف القنوات.');
-          const subs=sidebar.querySelector('h3');
-        }else if(type==='suggest'){
-          if(data.query===searchBox.value.trim() && document.activeElement===searchBox)renderSuggestions(data.suggestions||[]);
-        }else if(type==='search'){
-          if(currentMode!=='search'||data.query!==currentQuery)return;
-          allVideos=data.videos||[];selection='all';render();
-          if(data.error)notice(data.error);
-        }else if(type==='history'){
-          if(currentMode!=='history')return;
-          allVideos=data.videos||[];selection='all';render();
-          if(!allVideos.length)notice('سجل المشاهدة فارغ. ستظهر هنا المقاطع التي تشغلها من هذا التطبيق.');
-        }
-      }
-      window.appReceive=(message)=>{
-        try{const p=typeof message==='string'?JSON.parse(message):message;receive(p.type,p)}catch(e){notice('تعذر عرض البيانات: '+e.message)}
-      };
-      window.appVoiceSearch=(text)=>{
-        if(!text)return;
-        searchBox.value=text;
-        doSearch();
-      };
-      const voiceButton=document.querySelector('header button[title="البحث باستخدام الصوت"]');
-      if(voiceButton){
-        voiceButton.style.display='';
-        voiceButton.addEventListener('click',()=>{if(native)native.voice()});
-      }
-      headerSearch?.addEventListener('click',doSearch);
-      searchBox.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
-      const logo=document.querySelector('header a[title="YouTube Home"]');
-      logo?.addEventListener('click',e=>{e.preventDefault();goHome()});
-      function bindMenu(a){
-        const name=a.textContent.trim();
-        if(name.includes('الصفحة الرئيسية')||name==='الرئيسية') return ()=>goHome();
-        if(name==='السجل')return ()=>showHistory();
-        if(name==='الاشتراكات')return ()=>showSubs();
-        if(name==='المشاهدة لاحقاً')return ()=>notice('ميزة المشاهدة لاحقًا لم تُربط بعد.');
-        return ()=>notice('هذا القسم غير متاح في النسخة المخصصة حاليًا. استخدم الرئيسية أو البحث أو السجل.');
-      }
-      sidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();bindMenu(a)()}));
-      miniSidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();bindMenu(a)()}));
-      let expanded=true;
-      menuBtn.addEventListener('click',()=>{
-        if(innerWidth>=768){
-          expanded=!expanded;
-          sidebar.classList.toggle('hidden',!expanded);
-          miniSidebar.classList.toggle('hidden',expanded);
-          miniSidebar.classList.toggle('flex',!expanded);
-        }else{
-          sidebar.classList.toggle('hidden');
-          sidebar.classList.toggle('absolute');
-          sidebar.classList.toggle('z-50');
-        }
-      });
-      // Remove example-only fake subscriptions and sections from the supplied mockup.
-      const subsHeading=[...sidebar.querySelectorAll('h3')].find(e=>e.textContent.trim()==='الاشتراكات');
-      if(subsHeading){const container=subsHeading.parentElement;container.querySelectorAll('a').forEach(a=>a.remove());}
-      const demoButtons=[...document.querySelectorAll('header button')].filter(b=>b.title==='إنشاء'||b.title==='الإشعارات');
-      demoButtons.forEach(b=>b.style.display='none');
-      document.querySelectorAll('header img[src*="placehold"]').forEach(img=>{img.style.display='none'});
-      // Keep original YouTube-style header, sidebar, Cairo typography and cards.
-      goHome();
-    </script>
-</body>
-</html>
+<body>
+<header class="top">
+  <div class="brand-area">
+    <button class="menu" id="menu" aria-label="القائمة">☰</button>
+    <a href="#" id="brand" class="logo"><span class="play-logo">▶</span><strong>YouTube Me</strong><small>TV</small></a>
+  </div>
+  <div class="search-area">
+    <div class="search-shell"><span class="search-icon">⌕</span><input id="search" type="text" placeholder="ابحث عن فيديوهات..." autocomplete="off" aria-label="البحث عن فيديو"></div>
+    <button id="search-go" class="search-go" aria-label="تنفيذ البحث">⌕</button>
+    <button id="voice" class="voice" aria-label="البحث بالصوت">♩</button>
+    <div id="autocomplete" role="listbox"></div>
+  </div>
+  <div class="top-badge">قنواتك المختارة فقط</div>
+</header>
+<div class="layout">
+  <aside id="sidebar" class="sidebar">
+    <div class="nav-caption">التصفح</div>
+    <button class="nav-link active" data-nav="home"><span class="ico">⌂</span><span class="nav-text">الرئيسية</span></button>
+    <button class="nav-link" data-nav="subscriptions"><span class="ico">▣</span><span class="nav-text">القنوات المختارة</span></button>
+    <div class="nav-caption">مكتبتي</div>
+    <button class="nav-link" data-nav="history"><span class="ico">◴</span><span class="nav-text">سجل المشاهدة</span></button>
+  </aside>
+  <main class="content" id="content">
+    <div class="heading"><div><h1 id="page-title">مقاطع مختارة لك</h1><p id="page-subtitle">من القنوات التي أضفتها فقط، بدون اقتراحات عشوائية</p></div><span class="count" id="count">جاري التحميل</span></div>
+    <div id="chips" aria-label="تصفية القنوات"></div>
+    <section id="grid" aria-label="الفيديوهات"><div class="notice">جاري تحميل قنواتك المختارة...</div></section>
+  </main>
+</div>
+<script>
+(function(){
+'use strict';
+const native=window.NativeBridge||null;
+const search=document.getElementById('search'), grid=document.getElementById('grid'), chips=document.getElementById('chips');
+const dropdown=document.getElementById('autocomplete'), sidebar=document.getElementById('sidebar'), content=document.getElementById('content');
+const count=document.getElementById('count'), title=document.getElementById('page-title'), subtitle=document.getElementById('page-subtitle');
+let mode='home', filter='all', channels=[], videos=[], query='', timer=null, loadedHome=false;
+const safe=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const visible=el=>!!(el&&el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden');
+function focus(el){if(!el||!visible(el))return;el.focus({preventScroll:true});el.scrollIntoView({block:'nearest',inline:'nearest',behavior:'auto'});}
+function firstCard(){return grid.querySelector('.card[tabindex="0"], .channel-button');}
+function firstChip(){return chips.querySelector('.chip');}
+function closeSuggestions(){dropdown.style.display='none';dropdown.replaceChildren();}
+function notice(txt){grid.innerHTML='<div class="notice"><span class="empty-icon">▣</span>'+safe(txt)+'</div>';count.textContent='0 مقاطع';}
+function highlightNav(){document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===mode));}
+function showChips(){
+  chips.innerHTML='';
+  if(mode!=='home'){chips.style.display='none';return;}
+  chips.style.display='flex';
+  [{channelId:'all',name:'الكل'},...channels].forEach(c=>{
+    const b=document.createElement('button');b.className='chip'+(filter===c.channelId?' selected':'');b.textContent=c.name;b.dataset.channel=c.channelId;
+    b.addEventListener('click',()=>{const stay=document.activeElement===b;filter=c.channelId;showChips();render();if(stay)focus(chips.querySelector('.chip.selected'));});
+    chips.appendChild(b);
+  });
+}
+function render(){
+  if(mode==='subscriptions'){
+    grid.innerHTML='';count.textContent=channels.length+' قنوات';
+    if(!channels.length){notice('لم تُضف قنوات بعد');return;}
+    channels.forEach(c=>{
+      const b=document.createElement('button');b.className='card channel-button';b.style.textAlign='right';b.innerHTML='<div class="card-meta"><span class="avatar">'+safe((c.name||'ق')[0])+'</span><div class="meta"><div class="card-title">'+safe(c.name)+'</div><div class="channel-name">افتح فيديوهات القناة</div></div></div>';
+      b.addEventListener('click',()=>{mode='home';filter=c.channelId;highlightNav();updateHeading();showChips();render();focus(firstCard()||firstChip());});grid.appendChild(b);
+    });
+    return;
+  }
+  const arr=mode==='home'&&filter!=='all'?videos.filter(x=>x.channelId===filter):videos;
+  count.textContent=arr.length+' مقطع';
+  grid.innerHTML='';
+  if(!arr.length){notice(mode==='history'?'سجل المشاهدة فارغ':mode==='search'?'لا توجد نتائج للبحث':'لا توجد فيديوهات حاليًا');return;}
+  arr.forEach(v=>{
+    const id=String(v.id||'');const el=document.createElement('div');el.className='card';el.tabIndex=0;el.setAttribute('role','button');el.dataset.video=id;
+    const img=v.thumbnail||('https://i.ytimg.com/vi/'+encodeURIComponent(id)+'/hqdefault.jpg');
+    el.innerHTML='<div class="poster"><img loading="lazy" src="'+safe(img)+'" alt="" onerror="this.onerror=null;this.src=\'https://i.ytimg.com/vi/'+safe(id)+'/hqdefault.jpg\'">'+(v.duration?'<span class="duration">'+safe(v.duration)+'</span>':'')+'</div><div class="card-meta"><span class="avatar">'+safe((v.channel||'ي')[0])+'</span><div class="meta"><div class="card-title">'+safe(v.title)+'</div><div class="channel-name">'+safe(v.channel)+'</div></div></div>';
+    el.setAttribute('aria-label',String(v.title||'تشغيل فيديو'));
+    const play=()=>{if(native)native.play(id,String(v.title||''),String(v.channel||''),String(v.thumbnail||''));};
+    el.addEventListener('click',play);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play();}});
+    grid.appendChild(el);
+  });
+}
+function updateHeading(){
+  const labels={home:['مقاطع مختارة لك','من القنوات التي أضفتها فقط، بدون اقتراحات عشوائية'],search:['نتائج البحث','بحث يوتيوب باستخدام محرك SmartTube'],history:['سجل المشاهدة','المقاطع التي سبق أن شاهدتها'],subscriptions:['القنوات المختارة','قنواتك التي تديرها عبر GitHub']};
+  title.textContent=labels[mode][0];subtitle.textContent=labels[mode][1];highlightNav();
+}
+function goHome(){mode='home';filter='all';query='';search.value='';closeSuggestions();updateHeading();showChips();notice('جاري تحميل قنواتك المختارة...');if(native)native.home();}
+function doSearch(){const q=search.value.trim();if(!q)return;closeSuggestions();mode='search';query=q;filter='all';updateHeading();showChips();notice('جاري البحث عن '+q+'...');if(native)native.search(q);}
+function showHistory(){mode='history';closeSuggestions();updateHeading();showChips();notice('جاري تحميل سجل المشاهدة...');if(native)native.history();}
+function showSubs(){mode='subscriptions';closeSuggestions();updateHeading();showChips();render();}
+function renderSuggestions(items){
+  dropdown.innerHTML='';
+  (items||[]).slice(0,8).forEach(term=>{
+    const b=document.createElement('button');b.className='suggestion';b.textContent=term;b.addEventListener('click',()=>{search.value=term;doSearch();});dropdown.appendChild(b);
+  });
+  dropdown.style.display=dropdown.children.length?'block':'none';
+}
+search.addEventListener('input',()=>{clearTimeout(timer);closeSuggestions();const q=search.value.trim();if(q&&native)timer=setTimeout(()=>native.suggest(q),250);});
+search.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch();}else if(e.key==='Escape'){closeSuggestions();search.blur();}});
+document.getElementById('search-go').addEventListener('click',doSearch);
+document.getElementById('voice').addEventListener('click',()=>{if(native)native.voice();});
+document.getElementById('brand').addEventListener('click',e=>{e.preventDefault();goHome();});
+document.getElementById('menu').addEventListener('click',()=>{sidebar.classList.toggle('compact');sidebar.classList.toggle('open');});
+document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>{const target=b.dataset.nav;if(target==='home')goHome();if(target==='history')showHistory();if(target==='subscriptions')showSubs();}));
+function isTextInput(el){return el===search;}
+function goSpatial(active,key){
+  const targets=[...document.querySelectorAll('#menu,#brand,#search,#search-go,#voice,#sidebar .nav-link,#chips .chip,#grid .card,#grid .channel-button')].filter(visible);
+  const from=active.getBoundingClientRect(), fx=from.left+from.width/2, fy=from.top+from.height/2;
+  let nearest=null,best=Infinity;
+  targets.forEach(el=>{
+    if(el===active)return;
+    const r=el.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2,dx=x-fx,dy=y-fy;
+    if(key==='ArrowDown'&&dy<=8)return;if(key==='ArrowUp'&&dy>=-8)return;
+    if(key==='ArrowLeft'&&dx>=-8)return;if(key==='ArrowRight'&&dx<=8)return;
+    const main=key==='ArrowDown'||key==='ArrowUp'?Math.abs(dy):Math.abs(dx);
+    const side=key==='ArrowDown'||key==='ArrowUp'?Math.abs(dx):Math.abs(dy);
+    const score=main+side*2.5;
+    if(score<best){nearest=el;best=score;}
+  });
+  if(nearest)focus(nearest);return !!nearest;
+}
+// TV remote D-pad: search always goes directly to autocomplete or videos;
+// no requirement to visit the hamburger/sidebar before scrolling.
+document.addEventListener('keydown',e=>{
+  if(!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(e.key))return;
+  const active=document.activeElement;
+  if(isTextInput(active)){
+    if(e.key==='ArrowDown'){e.preventDefault();focus(dropdown.style.display!=='none'&&dropdown.querySelector('.suggestion')||firstCard()||firstChip());}
+    return;
+  }
+  if(active&&active.classList.contains('suggestion')){
+    const list=[...dropdown.querySelectorAll('.suggestion')],i=list.indexOf(active);
+    if(e.key==='ArrowDown'){e.preventDefault();focus(list[i+1]||firstCard()||firstChip());return;}
+    if(e.key==='ArrowUp'){e.preventDefault();focus(list[i-1]||search);return;}
+  }
+  if(active&&active.classList.contains('card')&&e.key==='ArrowUp'){
+    const rect=active.getBoundingClientRect(),other=[...grid.querySelectorAll('.card')].some(el=>el!==active&&el.getBoundingClientRect().bottom<=rect.top+4);
+    if(!other){e.preventDefault();focus(firstChip()||search);return;}
+  }
+  if(!active||active===document.body||active===document.documentElement){e.preventDefault();focus(firstCard()||firstChip()||search);return;}
+  if(goSpatial(active,e.key))e.preventDefault();
+},true);
+window.appReceive=message=>{
+  try{
+    const d=typeof message==='string'?JSON.parse(message):message;
+    if(d.type==='home'){
+      channels=d.channels||[];if(mode!=='home')return;
+      videos=d.videos||[];loadedHome=true;showChips();render();
+      if(!videos.length&&(d.errors||[]).length)notice('تعذر تحميل القنوات: '+d.errors.join(' • '));
+    }else if(d.type==='suggest'){
+      if(d.query===search.value.trim()&&document.activeElement===search)renderSuggestions(d.suggestions);
+    }else if(d.type==='search'&&mode==='search'&&d.query===query){
+      videos=d.videos||[];render();if(d.error)notice(d.error);
+    }else if(d.type==='history'&&mode==='history'){videos=d.videos||[];render();}
+  }catch(err){notice('تعذر عرض البيانات: '+err.message);}
+};
+window.appVoiceSearch=text=>{if(!text)return;search.value=text;doSearch();};
+goHome();
+})();
+</script>
+</body></html>
