@@ -299,8 +299,12 @@
       });
       searchBox.addEventListener('keydown',e=>{
         if(e.key==='Escape'){closeSuggestions();return}
-        if(e.key==='ArrowDown'&&dropdown.style.display!=='none'){
-          e.preventDefault();dropdown.querySelector('button')?.focus();
+        if(e.key==='ArrowDown'){
+          const firstSuggestion=dropdown.style.display!=='none' ? dropdown.querySelector('button') : null;
+          const firstVideo=grid.querySelector('[data-video]');
+          const firstChannel=chips.querySelector('button');
+          const target=firstSuggestion || firstVideo || firstChannel;
+          if(target){e.preventDefault();target.focus();}
         }
       });
       dropdown.addEventListener('keydown',e=>{
