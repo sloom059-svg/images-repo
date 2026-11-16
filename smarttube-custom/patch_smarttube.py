@@ -304,3 +304,17 @@ manifest_path.write_text(manifest, encoding="utf-8")
 
 p.write_text(source, encoding="utf-8")
 print("Patched official SmartTube Home mapping; all other sections and playback untouched.")
+
+# Use the uploaded Lottie animation's keyframes as the ONLY playback loading
+# indicator. The default controls, player, history and Telegram sync are untouched.
+loading_fragment = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/playback/PlaybackFragment.java")
+loading_source = loading_fragment.read_text(encoding="utf-8")
+loading_needle = "ProgressBarManager.setup(getProgressBarManager(), (ViewGroup) root);"
+assert loading_source.count(loading_needle) == 1, "Player loading indicator setup changed upstream"
+loading_fragment.write_text(loading_source.replace(loading_needle, "com.liskovsoft.smartyoutubetv2.tv.ui.mod.leanback.misc.YoutubeMeLoadingView.setup(getProgressBarManager(), (ViewGroup) root);"), encoding="utf-8")
+loading_package = Path("SmartTube/smarttubetv/src/main/java/com/liskovsoft/smartyoutubetv2/tv/ui/mod/leanback/misc")
+(loading_package / "YoutubeMeLoadingView.java").write_bytes(Path("smarttube-custom/YoutubeMeLoadingView.java").read_bytes())
+loading_assets = Path("SmartTube/smarttubetv/src/main/assets")
+loading_assets.mkdir(parents=True, exist_ok=True)
+(loading_assets / "ytme_loading.json").write_bytes(Path("smarttube-custom/loading.json").read_bytes())
+
